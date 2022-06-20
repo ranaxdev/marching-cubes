@@ -11,7 +11,6 @@ int Renderer::free_bindpoint    = -1;
 Renderer::Renderer(GLuint &VAO, GLuint *buf)
 : VAO(VAO), buf(buf) {
 
-
 }
 
 /* ****************************************************************
@@ -36,9 +35,30 @@ void Renderer::enableAxis() {
     // Prepare buffer
     GLuint loc = prepBuf((GLfloat*)axis_data, sizeof(axis_data));
 
-    // Format data
-    formatBuf(loc, 3, {0, 1}, Renderer::shader_axis);
+    axis_loc = loc;
 
+    // Format data
+    formatBuf(loc, 3, {0, 1});
+
+}
+
+void Renderer::create_point_buffer(std::vector<glm::vec3> points) {
+    std::vector<GLfloat> data;
+    for(auto& p: points){
+        data.push_back(p.x);
+        data.push_back(p.y);
+        data.push_back(p.z);
+
+        data.push_back(1.0f);
+        data.push_back(0.0f);
+        data.push_back(0.0f);
+    }
+
+    GLuint loc = prepBuf(data, false);
+
+    points_loc = loc;
+
+    formatBuf(loc, 3, {0, 1});
 }
 
 
@@ -53,15 +73,28 @@ void Renderer::renderAxis() {
     shader_axis.setMat4(20, qaiser::Harness::VP);
     glLineWidth(3.0f);
 
+
     glDrawArrays(GL_LINES , 0, 6);
 }
 
+void Renderer::renderPoints() {
+    shader_axis.bind();
+    shader_axis.setMat4(20, qaiser::Harness::VP);
+    glPointSize(16.0f);
+
+
+
+    glDrawArrays(GL_POINTS, 0, 10*10*10);
+
+}
 
 
 void Renderer::renderGUI(Menu &g) {
     g.update();
 
 }
+
+
 
 
 /* ****************************************************************
@@ -77,6 +110,7 @@ unsigned int Renderer::prepBuf(GLfloat *data, GLuint size) {
     glCreateBuffers(1, &buf[free_buf]);
     glNamedBufferStorage(buf[free_buf], size, data, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
 
+    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 unsigned int Renderer::prepBuf(GLushort *data, GLuint size) {
@@ -84,6 +118,7 @@ unsigned int Renderer::prepBuf(GLushort *data, GLuint size) {
     glCreateBuffers(1, &buf[free_buf]);
     glNamedBufferStorage(buf[free_buf], size, data, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
 
+    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 
@@ -115,6 +150,7 @@ unsigned int Renderer::prepBuf(std::vector<GLfloat>& data, bool big) {
     }
     glUnmapNamedBuffer(buf[free_buf]);
 
+    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 
@@ -150,19 +186,20 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
  * Formats the buffer for the VAO
  */
 
-void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs, Shader& s) {
-    free_bindpoint++;
+void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs) {
     auto num_attribs = attribs.size();
 
     for(int i=0; i < num_attribs; i++){
 
         glVertexArrayAttribFormat(VAO, attribs[i], comps_per_elem, GL_FLOAT, GL_FALSE, (i*comps_per_elem)*sizeof(float));
-        glVertexArrayAttribBinding(VAO, attribs[i], free_bindpoint);
+        glVertexArrayAttribBinding(VAO, attribs[i], 0);
         glEnableVertexArrayAttrib(VAO, attribs[i]);
     }
 
-    glVertexArrayVertexBuffer(VAO, free_bindpoint, buf[loc], 0, (num_attribs*comps_per_elem)*sizeof(float));
+    // put this above every draw call with appropriate buffer
+    glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, (num_attribs*comps_per_elem)*sizeof(float));
 }
+
 
 
 

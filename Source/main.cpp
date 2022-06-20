@@ -18,6 +18,7 @@
 #include "Harness.h"
 #include "Camera.h"
 #include "Menu.h"
+#include "MC.h"
 
 using namespace qaiser;
 class App : public qaiser::Harness{
@@ -25,11 +26,25 @@ public:
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
     Menu* menu;
 
+    std::vector<std::pair<glm::vec3, float>> samples;
+
     void startup() override {
 
-        R->enableAxis();
         menu = new Menu();
 
+        samples = generate_sphere_samples(10);
+
+//        for(auto& s : samples){
+//            std::printf("%2.1f %2.1f %2.1f -> %2.1f\n", s.first.x, s.first.y, s.first.z, s.second);
+//        }
+
+        std::vector<glm::vec3> data;
+        for(auto& s: samples)
+            data.push_back(s.first);
+
+
+        R->enableAxis();
+        R->create_point_buffer(data);
     };
 
 
@@ -42,6 +57,9 @@ public:
         R->renderGUI(*menu);
 
         R->renderAxis();
+        R->renderPoints();
+
+
 
     }
 };

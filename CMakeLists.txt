@@ -14,7 +14,7 @@ set(IMGUI_SOURCE_FILES
         external/imgui/imgui_tables.cpp
         external/imgui/imgui_widgets.cpp)
 
-set(GLAD_SOURCE_FILES external/glad/glad.c Include/Menu.h Source/GUI/Menu.cpp)
+set(GLAD_SOURCE_FILES external/glad/glad.c Include/Menu.h Source/GUI/Menu.cpp Include/MC.h Source/MC.cpp)
 
 add_subdirectory(external/glfw)
 

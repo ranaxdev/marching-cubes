@@ -16,17 +16,19 @@ public:
     ~Renderer() = default;
 
     void enableAxis();
+    void create_point_buffer(std::vector<glm::vec3> points);
 
 
     void renderGUI(Menu& g);
     void renderAxis();
+    void renderPoints();
 
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
     unsigned int prepBuf(std::vector<GLfloat>& data, bool big);
     unsigned int editBuf(std::vector<GLfloat>& data, GLuint i);
 
-    void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs, Shader& s);
+    void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
 private:
     // Memory mgmt
@@ -34,7 +36,9 @@ private:
     static int free_bindpoint;
     GLuint VAO;
     GLuint* buf;
-    GLuint fluid_buffer;
+
+    GLuint axis_loc;
+    GLuint points_loc;
 
     // Shaders
     // REMINDER: change environment variable SRC in globals to setup shaders correctly
