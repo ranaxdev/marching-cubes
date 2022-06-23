@@ -15,13 +15,13 @@ public:
     Renderer(GLuint& VAO, GLuint buf[]);
     ~Renderer() = default;
 
-    void enableAxis();
-    void create_point_buffer(std::vector<glm::vec3> points);
+    GLuint enableAxis();
+    GLuint create_point_buffer(std::vector<glm::vec3> points);
 
 
     void renderGUI(Menu& g);
-    void renderAxis();
-    void renderPoints();
+    void renderAxis(GLuint buffer);
+    void renderPoints(GLuint buffer);
 
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
@@ -36,9 +36,8 @@ private:
     static int free_bindpoint;
     GLuint VAO;
     GLuint* buf;
+    std::vector<GLsizei> strides;
 
-    GLuint axis_loc;
-    GLuint points_loc;
 
     // Shaders
     // REMINDER: change environment variable SRC in globals to setup shaders correctly

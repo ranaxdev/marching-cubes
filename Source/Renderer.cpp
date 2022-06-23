@@ -11,6 +11,8 @@ int Renderer::free_bindpoint    = -1;
 Renderer::Renderer(GLuint &VAO, GLuint *buf)
 : VAO(VAO), buf(buf) {
 
+    strides.resize(1024);
+
 }
 
 /* ****************************************************************
@@ -19,7 +21,7 @@ Renderer::Renderer(GLuint &VAO, GLuint *buf)
 /*
  * Initialize axes data
  */
-void Renderer::enableAxis() {
+GLuint Renderer::enableAxis() {
     const GLfloat axis_data[] = {
             // Axis 1 (red)
             0.0f, 0.0f, 2.5f,     1.0f, 0.0f, 0.0f,
@@ -35,14 +37,15 @@ void Renderer::enableAxis() {
     // Prepare buffer
     GLuint loc = prepBuf((GLfloat*)axis_data, sizeof(axis_data));
 
-    axis_loc = loc;
 
     // Format data
     formatBuf(loc, 3, {0, 1});
 
+    return loc;
+
 }
 
-void Renderer::create_point_buffer(std::vector<glm::vec3> points) {
+GLuint Renderer::create_point_buffer(std::vector<glm::vec3> points) {
     std::vector<GLfloat> data;
     for(auto& p: points){
         data.push_back(p.x);
@@ -56,9 +59,10 @@ void Renderer::create_point_buffer(std::vector<glm::vec3> points) {
 
     GLuint loc = prepBuf(data, false);
 
-    points_loc = loc;
 
     formatBuf(loc, 3, {0, 1});
+
+    return loc;
 }
 
 
@@ -68,22 +72,22 @@ void Renderer::create_point_buffer(std::vector<glm::vec3> points) {
  *                        RENDERING ROUTINES                      *
  ******************************************************************/
 // temp - just to get oriented in the world real quick
-void Renderer::renderAxis() {
+void Renderer::renderAxis(GLuint buffer) {
     shader_axis.bind();
     shader_axis.setMat4(20, qaiser::Harness::VP);
     glLineWidth(3.0f);
 
-
+    glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
     glDrawArrays(GL_LINES , 0, 6);
 }
 
-void Renderer::renderPoints() {
+void Renderer::renderPoints(GLuint buffer) {
     shader_axis.bind();
     shader_axis.setMat4(20, qaiser::Harness::VP);
     glPointSize(16.0f);
 
 
-
+    glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
     glDrawArrays(GL_POINTS, 0, 10*10*10);
 
 }
@@ -110,7 +114,6 @@ unsigned int Renderer::prepBuf(GLfloat *data, GLuint size) {
     glCreateBuffers(1, &buf[free_buf]);
     glNamedBufferStorage(buf[free_buf], size, data, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
 
-    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 unsigned int Renderer::prepBuf(GLushort *data, GLuint size) {
@@ -118,7 +121,6 @@ unsigned int Renderer::prepBuf(GLushort *data, GLuint size) {
     glCreateBuffers(1, &buf[free_buf]);
     glNamedBufferStorage(buf[free_buf], size, data, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
 
-    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 
@@ -150,7 +152,6 @@ unsigned int Renderer::prepBuf(std::vector<GLfloat>& data, bool big) {
     }
     glUnmapNamedBuffer(buf[free_buf]);
 
-    std::cout << "BUFFER#: " << free_buf << std::endl;
     return free_buf;
 }
 
@@ -196,8 +197,11 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
         glEnableVertexArrayAttrib(VAO, attribs[i]);
     }
 
+
+    strides[loc] = (GLsizei)((num_attribs*comps_per_elem) * sizeof(float));
+
     // put this above every draw call with appropriate buffer
-    glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, (num_attribs*comps_per_elem)*sizeof(float));
+    glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, strides[loc]);
 }
 
 

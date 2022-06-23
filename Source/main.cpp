@@ -28,23 +28,27 @@ public:
 
     std::vector<std::pair<glm::vec3, float>> samples;
 
+    // buffers
+    GLuint points_buffer;
+    GLuint axis_buffer;
+
     void startup() override {
 
         menu = new Menu();
 
         samples = generate_sphere_samples(10);
 
-//        for(auto& s : samples){
-//            std::printf("%2.1f %2.1f %2.1f -> %2.1f\n", s.first.x, s.first.y, s.first.z, s.second);
-//        }
+        for(auto& s : samples){
+            std::printf("%2.1f %2.1f %2.1f -> %2.1f\n", s.first.x, s.first.y, s.first.z, s.second);
+        }
 
         std::vector<glm::vec3> data;
         for(auto& s: samples)
             data.push_back(s.first);
 
 
-        R->enableAxis();
-        R->create_point_buffer(data);
+        axis_buffer = R->enableAxis();
+        points_buffer = R->create_point_buffer(data);
     };
 
 
@@ -56,8 +60,8 @@ public:
         // GUI
         R->renderGUI(*menu);
 
-        R->renderAxis();
-        R->renderPoints();
+        R->renderAxis(axis_buffer);
+        R->renderPoints(points_buffer);
 
 
 
