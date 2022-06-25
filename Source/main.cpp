@@ -26,7 +26,7 @@ public:
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
     Menu* menu;
 
-    std::vector<std::pair<glm::vec3, float>> samples;
+    std::vector<Cube> samples;
 
     // buffers
     GLuint points_buffer;
@@ -38,14 +38,20 @@ public:
 
         samples = generate_sphere_samples(10);
 
-        for(auto& s : samples){
-            std::printf("%2.1f %2.1f %2.1f -> %2.1f\n", s.first.x, s.first.y, s.first.z, s.second);
-        }
 
         std::vector<glm::vec3> data;
         for(auto& s: samples)
-            data.push_back(s.first);
+        {
+            data.push_back(s.vertices[0]);
+            data.push_back(s.vertices[1]);
+            data.push_back(s.vertices[2]);
+            data.push_back(s.vertices[3]);
+            data.push_back(s.vertices[4]);
+            data.push_back(s.vertices[5]);
+            data.push_back(s.vertices[6]);
+            data.push_back(s.vertices[7]);
 
+        }
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer(data);

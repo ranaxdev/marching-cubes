@@ -88,7 +88,7 @@ void Renderer::renderPoints(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_POINTS, 0, 10*10*10);
+    glDrawArrays(GL_POINTS, 0, 10000);
 
 }
 

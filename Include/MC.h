@@ -7,10 +7,17 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+/*
+ * A single marching cube cell
+ * Contains vertices of the cube & sampled values at the vertices
+ */
+struct Cube{
+    glm::vec3 vertices[8];
+    double samples[8];
+};
 
-
-std::vector<std::pair<glm::vec3, float>> generate_sphere_samples(int grid_size);
-
+std::vector<Cube> generate_sphere_samples(int grid_size);
+double sample_sphere(glm::vec3 position);
 
 
 #endif
