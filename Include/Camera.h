@@ -40,7 +40,7 @@ private:
     glm::vec3 cam_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
     glm::mat4 view_m = glm::mat4(1.0f);
-    glm::mat4 proj_m = glm::perspective(glm::radians(80.0f), 16.0f/9.0f, 0.1f, 100.0f);
+    glm::mat4 proj_m = glm::perspective(glm::radians(45.0f), 16.0f/9.0f, 0.1f, 100.0f);
 //glm::mat4 proj_m = glm::ortho(-(1920.0f/1080.0f), (1920.0f/1080.0f), -50.0f, 50.0f, -10.0f, 10.0f);
     glm::mat4 vp_m = glm::mat4(1.0f);
 

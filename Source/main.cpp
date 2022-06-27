@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include <cmath>
+#include <iostream>
 #include <vector>
 #include <unordered_set>
 #include <algorithm>
@@ -27,34 +28,62 @@ public:
     Menu* menu;
 
     std::vector<Cube> samples;
+    std::vector<Triangle> t;
 
     // buffers
-    GLuint points_buffer;
     GLuint axis_buffer;
+    GLuint lines_buffer;
+    GLuint points_buffer;
+    GLuint tri_buffer;
 
     void startup() override {
 
         menu = new Menu();
 
+//        samples = generate_sphere_samples(10);
+
+        glm::vec3 v = glm::vec3(2.0f, 0.0f, 0.0f);
+        Cube cell{
+            {
+                v+ baseVertices[0],
+                v+ baseVertices[1],
+                v+ baseVertices[2],
+                v+baseVertices[3],
+                v+baseVertices[4],
+                v+baseVertices[5],
+                v+baseVertices[6],
+                v+baseVertices[7]
+            },
+            {
+                250,
+                56,
+                128,
+                176,
+                189,
+                111,
+                65,
+                23
+            }
+        };
+
+//        samples.push_back(cell);
+
         samples = generate_sphere_samples(10);
 
+        for(auto& s: samples){
+            std::vector<Triangle> tris = march(s, 100);
 
-        std::vector<glm::vec3> data;
-        for(auto& s: samples)
-        {
-            data.push_back(s.vertices[0]);
-            data.push_back(s.vertices[1]);
-            data.push_back(s.vertices[2]);
-            data.push_back(s.vertices[3]);
-            data.push_back(s.vertices[4]);
-            data.push_back(s.vertices[5]);
-            data.push_back(s.vertices[6]);
-            data.push_back(s.vertices[7]);
-
+            for(auto& i : tris)
+                t.push_back(i);
         }
 
+        std::cout << t.size() << std::endl;
+
+
         axis_buffer = R->enableAxis();
-        points_buffer = R->create_point_buffer(data);
+        points_buffer = R->create_point_buffer(samples);
+        lines_buffer = R->create_grid_buffer(samples);
+        tri_buffer = R->create_tri_buffer(t);
     };
 
 
@@ -67,9 +96,12 @@ public:
         R->renderGUI(*menu);
 
         R->renderAxis(axis_buffer);
+
         R->renderPoints(points_buffer);
 
+        R->renderLines(lines_buffer);
 
+        R->renderTris(tri_buffer);
 
     }
 };

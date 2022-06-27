@@ -45,16 +45,26 @@ GLuint Renderer::enableAxis() {
 
 }
 
-GLuint Renderer::create_point_buffer(std::vector<glm::vec3> points) {
+GLuint Renderer::create_point_buffer(std::vector<Cube> cells) {
     std::vector<GLfloat> data;
-    for(auto& p: points){
-        data.push_back(p.x);
-        data.push_back(p.y);
-        data.push_back(p.z);
+    for(auto& c: cells){
+        for(int i=0; i < 8; i++){
+            data.push_back(c.vertices[i].x);
+            data.push_back(c.vertices[i].y);
+            data.push_back(c.vertices[i].z);
 
-        data.push_back(1.0f);
-        data.push_back(0.0f);
-        data.push_back(0.0f);
+            glm::vec3 color;
+            if(c.samples[i] > 100)
+                color = glm::vec3(0.0f);
+            else
+                color = glm::vec3(0.0f, 1.0f, 0.0f);
+
+            data.push_back(color.x);
+            data.push_back(color.y);
+            data.push_back(color.z);
+
+
+        }
     }
 
     GLuint loc = prepBuf(data, false);
@@ -64,6 +74,62 @@ GLuint Renderer::create_point_buffer(std::vector<glm::vec3> points) {
 
     return loc;
 }
+
+
+
+GLuint Renderer::create_grid_buffer(std::vector<Cube> cells) {
+    std::vector<GLfloat> data;
+    for(auto& c : cells){
+        for(int e = 0; e < 12; e++){
+            data.push_back(c.vertices[edges[e][0]].x); // first vertex of edge
+            data.push_back(c.vertices[edges[e][0]].y);
+            data.push_back(c.vertices[edges[e][0]].z);
+
+            data.push_back(1.0f); data.push_back(0.0f); data.push_back(0.0f); // color
+
+
+            data.push_back(c.vertices[edges[e][1]].x); // second vertex of edge
+            data.push_back(c.vertices[edges[e][1]].y);
+            data.push_back(c.vertices[edges[e][1]].z);
+
+            data.push_back(1.0f); data.push_back(0.0f); data.push_back(0.0f); // color
+
+        }
+    }
+
+    GLuint loc = prepBuf(data, false);
+
+
+    formatBuf(loc, 3, {0, 1});
+
+    return loc;
+
+}
+
+
+
+GLuint Renderer::create_tri_buffer(std::vector<Triangle> tris) {
+    std::vector<GLfloat> data;
+    for(auto& t: tris){
+        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+    }
+    std::cout << data.size() << std::endl;
+    GLuint loc = prepBuf(data, false);
+
+
+    formatBuf(loc, 3, {0, 1});
+
+    return loc;
+}
+
 
 
 
@@ -88,9 +154,36 @@ void Renderer::renderPoints(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_POINTS, 0, 10000);
+    glDrawArrays(GL_POINTS, 0, 48000);
 
 }
+
+void Renderer::renderLines(GLuint buffer) {
+
+    shader_axis.bind();
+    shader_axis.setMat4(20, qaiser::Harness::VP);
+    glPointSize(16.0f);
+
+
+    glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
+    glDrawArrays(GL_LINES, 0, 144000);
+
+}
+
+
+void Renderer::renderTris(GLuint buffer) {
+
+
+    shader_axis.bind();
+    shader_axis.setMat4(20, qaiser::Harness::VP);
+
+
+    glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
+    glDrawArrays(GL_TRIANGLES, 0, 8496);
+
+}
+
+
 
 
 void Renderer::renderGUI(Menu &g) {
@@ -203,6 +296,10 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
     // put this above every draw call with appropriate buffer
     glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, strides[loc]);
 }
+
+
+
+
 
 
 

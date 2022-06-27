@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "MC.h"
 #include "Globals.h"
 #include "Shader.h"
 #include "Menu.h"
@@ -16,12 +17,16 @@ public:
     ~Renderer() = default;
 
     GLuint enableAxis();
-    GLuint create_point_buffer(std::vector<glm::vec3> points);
+    GLuint create_point_buffer(std::vector<Cube> cells);
+    GLuint create_grid_buffer(std::vector<Cube> cells);
+    GLuint create_tri_buffer(std::vector<Triangle> tris);
 
 
     void renderGUI(Menu& g);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
+    void renderLines(GLuint buffer);
+    void renderTris(GLuint buffer);
 
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
