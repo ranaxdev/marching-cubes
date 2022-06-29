@@ -24,14 +24,14 @@ Renderer::Renderer(GLuint &VAO, GLuint *buf)
 GLuint Renderer::enableAxis() {
     const GLfloat axis_data[] = {
             // Axis 1 (red)
-            0.0f, 0.0f, 2.5f,     1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, -2.5f,    1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 12.5f,     1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, -12.5f,    1.0f, 0.0f, 0.0f,
             // Axis 2 (green)
-            0.0f, 2.5f, 0.0f,    0.0f, 1.0f, 0.0f,
-            0.0f, -2.5f, 0.0f,   0.0f, 1.0f, 0.0f,
+            0.0f, 12.5f, 0.0f,    0.0f, 1.0f, 0.0f,
+            0.0f, -12.5f, 0.0f,   0.0f, 1.0f, 0.0f,
             // Axis 3 (blue)
-            2.5f, 0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
-            -2.5f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f
+            12.5f, 0.0f, 0.0f,    0.0f, 0.0f, 1.0f,
+            -12.5f, 0.0f, 0.0f,   0.0f, 0.0f, 1.0f
     };
 
     // Prepare buffer
@@ -119,14 +119,14 @@ GLuint Renderer::create_grid_buffer() {
             data.push_back(c.vertices[edges[e][0]].y);
             data.push_back(c.vertices[edges[e][0]].z);
 
-            data.push_back(1.0f); data.push_back(0.0f); data.push_back(0.0f); // color
+            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
 
             data.push_back(c.vertices[edges[e][1]].x); // second vertex of edge
             data.push_back(c.vertices[edges[e][1]].y);
             data.push_back(c.vertices[edges[e][1]].z);
 
-            data.push_back(1.0f); data.push_back(0.0f); data.push_back(0.0f); // color
+            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
         }
     }
@@ -226,7 +226,8 @@ void Renderer::renderPoints(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_POINTS, 0, sizes[buffer]);
+
+    glDrawArrays(GL_POINTS, 0, sizes[buffer]/6);
 
 }
 
@@ -344,12 +345,14 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
         Logger::log(ERROR, "Buffer overflowed, buffer ID: "+ std::to_string(i), __FILENAME__);
     }
 
+    // Unmap previous data to null
     float* ptr0 = (float*) glMapNamedBufferRange(buf[i], 0, previous_size, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
     for(int x=0; x < sizes[i]; x++)
         ptr0[x] = 0;
     glUnmapNamedBuffer(buf[i]);
 
 
+    // Map new data
     float* ptr = (float*) glMapNamedBufferRange(buf[i], 0, dat_size, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
     for(int x=0; x<size; x++){
         ptr[x] = data[x];

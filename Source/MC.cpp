@@ -8,7 +8,7 @@ std::vector<Cube> generate_sphere_samples(int grid_size) {
 
     std::vector<Cube> cells;
 
-    glm::vec3 v = glm::vec3(0.0f);
+    glm::vec3 v = glm::vec3(-grid_size/2.0f, -grid_size/2.0f, -grid_size/2.0f);
 
     for(int y = 0; y < grid_size; y++){
 
@@ -72,13 +72,13 @@ std::vector<Cube> generate_sphere_samples(int grid_size) {
             }
 
             v.x += 1.0f;
-            v.z = 0.0f;
+            v.z = -grid_size/2.0f;
 
         }
 
 
-        v.x = 0.0f;
-        v.z = 0.0f;
+        v.x = -grid_size/2.0f;
+        v.z = -grid_size/2.0f;
         v.y += 1.0f;
     }
 
