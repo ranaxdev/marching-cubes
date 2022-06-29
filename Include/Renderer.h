@@ -17,12 +17,14 @@ public:
     ~Renderer() = default;
 
     GLuint enableAxis();
-    GLuint create_point_buffer(std::vector<Cube> cells);
-    GLuint create_grid_buffer(std::vector<Cube> cells);
+    GLuint create_point_buffer();
+    GLuint create_grid_buffer();
     GLuint create_tri_buffer(std::vector<Triangle> tris);
 
+    void update_points_buffer(GLuint buffer, double isovalue);
 
-    void renderGUI(Menu& g);
+
+    void renderGUI(Menu& g, GLuint points_buffer);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
@@ -35,13 +37,18 @@ public:
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
+    void setCells(std::vector<Cube> c);
+
 private:
     // Memory mgmt
     static int free_buf;
-    static int free_bindpoint;
     GLuint VAO;
     GLuint* buf;
     std::vector<GLsizei> strides;
+    std::vector<GLsizei> sizes;
+
+    // Marching cubes data
+    std::vector<Cube> cells;
 
 
     // Shaders

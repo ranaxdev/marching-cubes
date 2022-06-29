@@ -6,12 +6,12 @@
 
 // Static initializations
 int Renderer::free_buf          = -1;
-int Renderer::free_bindpoint    = -1;
 
 Renderer::Renderer(GLuint &VAO, GLuint *buf)
 : VAO(VAO), buf(buf) {
 
     strides.resize(1024);
+    sizes.resize(1024);
 
 }
 
@@ -41,11 +41,12 @@ GLuint Renderer::enableAxis() {
     // Format data
     formatBuf(loc, 3, {0, 1});
 
+
     return loc;
 
 }
 
-GLuint Renderer::create_point_buffer(std::vector<Cube> cells) {
+GLuint Renderer::create_point_buffer() {
     std::vector<GLfloat> data;
     for(auto& c: cells){
         for(int i=0; i < 8; i++){
@@ -72,12 +73,43 @@ GLuint Renderer::create_point_buffer(std::vector<Cube> cells) {
 
     formatBuf(loc, 3, {0, 1});
 
+    // Save size
+    sizes[loc] = data.size();
+
+
     return loc;
+}
+
+void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
+    std::vector<GLfloat> data;
+    for(auto& c: cells){
+        for(int i=0; i < 8; i++){
+            data.push_back(c.vertices[i].x);
+            data.push_back(c.vertices[i].y);
+            data.push_back(c.vertices[i].z);
+
+            glm::vec3 color;
+            if(c.samples[i] > isovalue)
+                color = glm::vec3(0.0f);
+            else
+                color = glm::vec3(0.0f, 1.0f, 0.0f);
+
+            data.push_back(color.x);
+            data.push_back(color.y);
+            data.push_back(color.z);
+
+        }
+    }
+    // update data size
+    sizes[buffer] = data.size();
+
+    editBuf(data, buffer);
+
 }
 
 
 
-GLuint Renderer::create_grid_buffer(std::vector<Cube> cells) {
+GLuint Renderer::create_grid_buffer() {
     std::vector<GLfloat> data;
     for(auto& c : cells){
         for(int e = 0; e < 12; e++){
@@ -102,6 +134,10 @@ GLuint Renderer::create_grid_buffer(std::vector<Cube> cells) {
 
     formatBuf(loc, 3, {0, 1});
 
+    // Save size
+    sizes[loc] = data.size();
+
+
     return loc;
 
 }
@@ -121,11 +157,13 @@ GLuint Renderer::create_tri_buffer(std::vector<Triangle> tris) {
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
-    std::cout << data.size() << std::endl;
     GLuint loc = prepBuf(data, false);
 
 
     formatBuf(loc, 3, {0, 1});
+
+    // Save size
+    sizes[loc] = data.size();
 
     return loc;
 }
@@ -154,7 +192,7 @@ void Renderer::renderPoints(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_POINTS, 0, 48000);
+    glDrawArrays(GL_POINTS, 0, sizes[buffer]);
 
 }
 
@@ -166,7 +204,7 @@ void Renderer::renderLines(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_LINES, 0, 144000);
+    glDrawArrays(GL_LINES, 0, sizes[buffer]);
 
 }
 
@@ -179,15 +217,23 @@ void Renderer::renderTris(GLuint buffer) {
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
-    glDrawArrays(GL_TRIANGLES, 0, 8496);
+    glDrawArrays(GL_TRIANGLES, 0, sizes[buffer]);
 
 }
 
 
 
-
-void Renderer::renderGUI(Menu &g) {
+/*
+ * Buffer adaption (later):
+ *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
+ */
+void Renderer::renderGUI(Menu &g, GLuint points_buffer) {
     g.update();
+
+    if(g.isoChanging)
+    {
+        update_points_buffer(points_buffer, g.iso);
+    }
 
 }
 
@@ -296,6 +342,13 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
     // put this above every draw call with appropriate buffer
     glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, strides[loc]);
 }
+
+void Renderer::setCells(std::vector<Cube> c) {
+    for(auto& cube : c)
+        cells.push_back(cube);
+}
+
+
 
 
 

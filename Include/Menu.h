@@ -13,11 +13,9 @@ public:
     bool start = false;
     bool reset = false;
 
-    float mass = 0.05f;
-    float gas = 0.03f;
-    float density = 200.5f;
-    float viscosity = 0.025f;
 
+    bool isoChanging = false;
+    float iso = 0.01f;
 
 
 };

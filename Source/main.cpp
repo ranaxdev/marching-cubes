@@ -77,12 +77,11 @@ public:
                 t.push_back(i);
         }
 
-        std::cout << t.size() << std::endl;
-
+        R->setCells(samples);
 
         axis_buffer = R->enableAxis();
-        points_buffer = R->create_point_buffer(samples);
-        lines_buffer = R->create_grid_buffer(samples);
+        points_buffer = R->create_point_buffer();
+        lines_buffer = R->create_grid_buffer();
         tri_buffer = R->create_tri_buffer(t);
     };
 
@@ -93,7 +92,7 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu);
+        R->renderGUI(*menu, points_buffer);
 
         R->renderAxis(axis_buffer);
 
