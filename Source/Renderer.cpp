@@ -55,7 +55,7 @@ GLuint Renderer::create_point_buffer() {
             data.push_back(c.vertices[i].z);
 
             glm::vec3 color;
-            if(c.samples[i] > 100)
+            if(c.samples[i] > 25)
                 color = glm::vec3(0.0f);
             else
                 color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -100,15 +100,17 @@ void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
 
         }
     }
-    // update data size
-    sizes[buffer] = data.size();
 
     editBuf(data, buffer);
+    // update data size
+    sizes[buffer] = data.size();
 
 }
 
 
-
+/*
+ * Display marching cubes grid for debug purposes
+ */
 GLuint Renderer::create_grid_buffer() {
     std::vector<GLfloat> data;
     for(auto& c : cells){
@@ -143,10 +145,12 @@ GLuint Renderer::create_grid_buffer() {
 }
 
 
-
-GLuint Renderer::create_tri_buffer(std::vector<Triangle> tris) {
+/*
+ * Takes triangle data generated from marching cubes algorithm and puts it in a buffer
+ */
+GLuint Renderer::create_tri_buffer() {
     std::vector<GLfloat> data;
-    for(auto& t: tris){
+    for(auto& t: generated_tris){
         data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
@@ -157,7 +161,7 @@ GLuint Renderer::create_tri_buffer(std::vector<Triangle> tris) {
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
-    GLuint loc = prepBuf(data, false);
+    GLuint loc = prepBuf(data, true);
 
 
     formatBuf(loc, 3, {0, 1});
@@ -167,6 +171,36 @@ GLuint Renderer::create_tri_buffer(std::vector<Triangle> tris) {
 
     return loc;
 }
+
+void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
+    generated_tris.clear();
+    for(auto& sample: cells){
+        std::vector<Triangle> tris = march(sample, isovalue);
+
+        for(auto& i : tris)
+            generated_tris.push_back(i);
+    }
+
+    std::vector<GLfloat> data;
+    for(auto& t: generated_tris){
+        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+    }
+
+
+    editBuf(data, buffer);
+
+    sizes[buffer] = data.size();
+
+}
+
 
 
 
@@ -227,12 +261,13 @@ void Renderer::renderTris(GLuint buffer) {
  * Buffer adaption (later):
  *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
  */
-void Renderer::renderGUI(Menu &g, GLuint points_buffer) {
+void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer) {
     g.update();
 
     if(g.isoChanging)
     {
         update_points_buffer(points_buffer, g.iso);
+        update_tri_buffer(tri_buffer, g.iso);
     }
 
 }
@@ -302,10 +337,18 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
     int size = (int) data.size();
     int dat_size = 4*size;
 
+    int previous_size = 4*sizes[i];
+
     // Buffer overflowed
     if(dat_size >= ONE_MB){
         Logger::log(ERROR, "Buffer overflowed, buffer ID: "+ std::to_string(i), __FILENAME__);
     }
+
+    float* ptr0 = (float*) glMapNamedBufferRange(buf[i], 0, previous_size, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+    for(int x=0; x < sizes[i]; x++)
+        ptr0[x] = 0;
+    glUnmapNamedBuffer(buf[i]);
+
 
     float* ptr = (float*) glMapNamedBufferRange(buf[i], 0, dat_size, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
     for(int x=0; x<size; x++){
@@ -346,6 +389,13 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
 void Renderer::setCells(std::vector<Cube> c) {
     for(auto& cube : c)
         cells.push_back(cube);
+
+    for(auto& sample: cells){
+        std::vector<Triangle> tris = march(sample, 25);
+
+        for(auto& i : tris)
+            generated_tris.push_back(i);
+    }
 }
 
 

@@ -19,12 +19,13 @@ public:
     GLuint enableAxis();
     GLuint create_point_buffer();
     GLuint create_grid_buffer();
-    GLuint create_tri_buffer(std::vector<Triangle> tris);
+    GLuint create_tri_buffer();
 
     void update_points_buffer(GLuint buffer, double isovalue);
+    void update_tri_buffer(GLuint buffer, double isovalue);
 
 
-    void renderGUI(Menu& g, GLuint points_buffer);
+    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
@@ -49,6 +50,7 @@ private:
 
     // Marching cubes data
     std::vector<Cube> cells;
+    std::vector<Triangle> generated_tris;
 
 
     // Shaders

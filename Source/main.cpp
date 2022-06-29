@@ -66,23 +66,16 @@ public:
             }
         };
 
-//        samples.push_back(cell);
 
         samples = generate_sphere_samples(10);
 
-        for(auto& s: samples){
-            std::vector<Triangle> tris = march(s, 100);
-
-            for(auto& i : tris)
-                t.push_back(i);
-        }
 
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer();
         lines_buffer = R->create_grid_buffer();
-        tri_buffer = R->create_tri_buffer(t);
+        tri_buffer = R->create_tri_buffer();
     };
 
 
@@ -92,7 +85,7 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu, points_buffer);
+        R->renderGUI(*menu, points_buffer, tri_buffer);
 
         R->renderAxis(axis_buffer);
 
