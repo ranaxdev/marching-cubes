@@ -17,6 +17,9 @@ public:
     bool isoChanging = false;
     float iso = 0.01f;
 
+    std::vector<int> debug_clicked;
+    bool* debug_vertices[8];
+
 
 };
 

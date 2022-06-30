@@ -262,7 +262,7 @@ void Renderer::renderTris(GLuint buffer) {
  * Buffer adaption (later):
  *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
  */
-void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer) {
+void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer) {
     g.update();
 
     if(g.isoChanging)
@@ -271,7 +271,22 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer) {
         update_tri_buffer(tri_buffer, g.iso);
     }
 
+
+
+    for(int i=0; i < 8; i++){
+        if(g.debug_clicked[i])
+        {
+            if(*g.debug_vertices[i])
+                debug_cell.samples[i] = 9;
+            else
+                debug_cell.samples[i] = 11;
+
+            update_debug_points(debug_points_buffer);
+            update_debug_tris(debug_tri_buffer);
+        }
+    }
 }
+
 
 
 
@@ -401,6 +416,163 @@ void Renderer::setCells(std::vector<Cube> c) {
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * DEBUGGING METHODS
+ */
+
+void Renderer::setDebugCell(Cube cell) {
+    this->debug_cell = cell;
+}
+
+void Renderer::enableDebug() {
+    this->debug = true;
+}
+
+GLuint Renderer::create_debug_point_buffer() {
+    std::vector<GLfloat> data;
+    for(int i=0; i < 8; i++){
+        data.push_back(debug_cell.vertices[i].x);
+        data.push_back(debug_cell.vertices[i].y);
+        data.push_back(debug_cell.vertices[i].z);
+
+        glm::vec3 color;
+        if(debug_cell.samples[i] > 10)
+            color = glm::vec3(0.0f);
+        else
+            color = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        data.push_back(color.x);
+        data.push_back(color.y);
+        data.push_back(color.z);
+
+    }
+    GLuint loc = prepBuf(data, false);
+
+
+    formatBuf(loc, 3, {0, 1});
+
+    // Save size
+    sizes[loc] = data.size();
+
+    return loc;
+}
+
+void Renderer::update_debug_points(GLuint buffer) {
+    std::vector<GLfloat> data;
+    for(int i=0; i < 8; i++){
+        data.push_back(debug_cell.vertices[i].x);
+        data.push_back(debug_cell.vertices[i].y);
+        data.push_back(debug_cell.vertices[i].z);
+
+        glm::vec3 color;
+        if(debug_cell.samples[i] > 10)
+            color = glm::vec3(0.0f);
+        else
+            color = glm::vec3(0.0f, 1.0f, 0.0f);
+
+        data.push_back(color.x);
+        data.push_back(color.y);
+        data.push_back(color.z);
+
+    }
+    editBuf(data, buffer);
+
+    sizes[buffer] = data.size();
+}
+
+
+
+
+
+GLuint Renderer::create_debug_grid_buffer() {
+    std::vector<GLfloat> data;
+    for(int e = 0; e < 12; e++){
+        data.push_back(debug_cell.vertices[edges[e][0]].x); // first vertex of edge
+        data.push_back(debug_cell.vertices[edges[e][0]].y);
+        data.push_back(debug_cell.vertices[edges[e][0]].z);
+
+        data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
+
+
+        data.push_back(debug_cell.vertices[edges[e][1]].x); // second vertex of edge
+        data.push_back(debug_cell.vertices[edges[e][1]].y);
+        data.push_back(debug_cell.vertices[edges[e][1]].z);
+
+        data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
+
+    }
+    GLuint loc = prepBuf(data, false);
+
+
+    formatBuf(loc, 3, {0, 1});
+
+    // Save size
+    sizes[loc] = data.size();
+
+    return loc;
+}
+
+GLuint Renderer::create_debug_tri_buffer() {
+    std::vector<GLfloat> data;
+
+    std::vector<Triangle> tris = march(debug_cell, 10);
+
+    for(auto& t: tris){
+        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+    }
+    GLuint loc = prepBuf(data, true);
+
+
+    formatBuf(loc, 3, {0, 1});
+
+    // Save size
+    sizes[loc] = data.size();
+
+    return loc;
+
+}
+
+void Renderer::update_debug_tris(GLuint buffer) {
+    std::vector<GLfloat> data;
+
+    std::vector<Triangle> tris = march(debug_cell, 10);
+
+    for(auto& t: tris){
+        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+
+    }
+
+    editBuf(data, buffer);
+
+    sizes[buffer] = data.size();
+}
 
 
 

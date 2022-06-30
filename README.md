@@ -7,6 +7,6 @@
 - Live isovalue edit (reconstruct triangle buffers live)
 - Matching debug vertices (black/white) with isovalue
 - Vertex normal calculation
-
+- Different buffer sizes enum ONE_MB, FIVE_MB through param etc..
 
 ## Writing

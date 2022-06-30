@@ -30,46 +30,33 @@ public:
     std::vector<Cube> samples;
     std::vector<Triangle> t;
 
-    // buffers
+    // MC buffers
     GLuint axis_buffer;
     GLuint lines_buffer;
     GLuint points_buffer;
     GLuint tri_buffer;
 
+    // debug buffers
+    GLuint debug_grid_buffer;
+    GLuint debug_points_buffer;
+    GLuint debug_tri_buffer;
+
+
     void startup() override {
 
         menu = new Menu();
 
-//        samples = generate_sphere_samples(10);
 
-        glm::vec3 v = glm::vec3(2.0f, 0.0f, 0.0f);
-        Cube cell{
-            {
-                v+ baseVertices[0],
-                v+ baseVertices[1],
-                v+ baseVertices[2],
-                v+baseVertices[3],
-                v+baseVertices[4],
-                v+baseVertices[5],
-                v+baseVertices[6],
-                v+baseVertices[7]
-            },
-            {
-                250,
-                56,
-                128,
-                176,
-                189,
-                111,
-                65,
-                23
-            }
-        };
+        // Cell debugging sample
+        R->enableDebug();
+        R->setDebugCell(generate_debug_sample());
+        debug_points_buffer = R->create_debug_point_buffer();
+        debug_grid_buffer = R->create_debug_grid_buffer();
+        debug_tri_buffer = R->create_debug_tri_buffer();
 
 
+        // Main sample
         samples = generate_sphere_samples(10);
-
-
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
@@ -85,16 +72,20 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu, points_buffer, tri_buffer);
+        R->renderGUI(*menu, points_buffer, tri_buffer, debug_points_buffer, debug_tri_buffer);
 
+        // Axis
         R->renderAxis(axis_buffer);
 
+        // Main sample
         R->renderPoints(points_buffer);
-
         R->renderLines(lines_buffer);
-
         R->renderTris(tri_buffer);
 
+        // Debug sample
+        R->renderPoints(debug_points_buffer);
+        R->renderLines(debug_grid_buffer);
+        R->renderTris(debug_tri_buffer);
     }
 };
 

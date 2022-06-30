@@ -44,6 +44,8 @@ static const std::uint32_t edges[12][2] =
         };
 
 std::vector<Cube> generate_sphere_samples(int grid_size);
+Cube generate_debug_sample();
+
 double sample_sphere(glm::vec3 position);
 glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sample2, double isovalue);
 

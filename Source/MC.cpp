@@ -86,9 +86,39 @@ std::vector<Cube> generate_sphere_samples(int grid_size) {
     return cells;
 }
 
+Cube generate_debug_sample(){
+    glm::vec3 v = glm::vec3(15.0f, 0.0f, 0.0f);
+    Cube cell{
+        {
+            v+ baseVertices[0],
+            v+ baseVertices[1],
+            v+ baseVertices[2],
+            v+baseVertices[3],
+            v+baseVertices[4],
+            v+baseVertices[5],
+            v+baseVertices[6],
+            v+baseVertices[7]
+            },
+            {
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11,
+            11
+            }
+    };
+
+    return cell;
+}
+
+
 double sample_sphere(glm::vec3 position) {
     return std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2) - 1;
 }
+
 
 
 

@@ -21,11 +21,12 @@ public:
     GLuint create_grid_buffer();
     GLuint create_tri_buffer();
 
+
     void update_points_buffer(GLuint buffer, double isovalue);
     void update_tri_buffer(GLuint buffer, double isovalue);
 
 
-    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer);
+    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
@@ -40,6 +41,17 @@ public:
 
     void setCells(std::vector<Cube> c);
 
+
+    // Debugging cell
+    void setDebugCell(Cube cell);
+    void enableDebug();
+    GLuint create_debug_point_buffer();
+    GLuint create_debug_grid_buffer();
+    GLuint create_debug_tri_buffer();
+    void update_debug_points(GLuint buffer);
+    void update_debug_tris(GLuint buffer);
+
+
 private:
     // Memory mgmt
     static int free_buf;
@@ -51,7 +63,8 @@ private:
     // Marching cubes data
     std::vector<Cube> cells;
     std::vector<Triangle> generated_tris;
-
+    Cube debug_cell;
+    bool debug = false;
 
     // Shaders
     // REMINDER: change environment variable SRC in globals to setup shaders correctly
