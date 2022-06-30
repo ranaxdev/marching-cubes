@@ -4,7 +4,7 @@
  * Function: x^2 + y^2 + z^2 -1 = 0
  * pair -> vec3 (pos), float (sampled val)
  */
-std::vector<Cube> generate_sphere_samples(int grid_size) {
+std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3)) {
 
     std::vector<Cube> cells;
 
@@ -26,14 +26,14 @@ std::vector<Cube> generate_sphere_samples(int grid_size) {
                     }
                     ,
                     {
-                    sample_sphere(v+baseVertices[0]),
-                    sample_sphere(v+baseVertices[1]),
-                    sample_sphere(v+baseVertices[2]),
-                    sample_sphere(v+baseVertices[3]),
-                    sample_sphere(v+baseVertices[4]),
-                    sample_sphere(v+baseVertices[5]),
-                    sample_sphere(v+baseVertices[6]),
-                    sample_sphere(v+baseVertices[7])
+                    func(v+baseVertices[0]),
+                    func(v+baseVertices[1]),
+                    func(v+baseVertices[2]),
+                    func(v+baseVertices[3]),
+                    func(v+baseVertices[4]),
+                    func(v+baseVertices[5]),
+                    func(v+baseVertices[6]),
+                    func(v+baseVertices[7])
 
                     }
             };
@@ -55,14 +55,14 @@ std::vector<Cube> generate_sphere_samples(int grid_size) {
                         }
                         ,
                         {
-                        sample_sphere(v+baseVertices[0]),
-                        sample_sphere(v+baseVertices[1]),
-                        sample_sphere(v+baseVertices[2]),
-                        sample_sphere(v+baseVertices[3]),
-                        sample_sphere(v+baseVertices[4]),
-                        sample_sphere(v+baseVertices[5]),
-                        sample_sphere(v+baseVertices[6]),
-                        sample_sphere(v+baseVertices[7])
+                        func(v+baseVertices[0]),
+                        func(v+baseVertices[1]),
+                        func(v+baseVertices[2]),
+                        func(v+baseVertices[3]),
+                        func(v+baseVertices[4]),
+                        func(v+baseVertices[5]),
+                        func(v+baseVertices[6]),
+                        func(v+baseVertices[7])
 
                         }
                 };
@@ -116,9 +116,13 @@ Cube generate_debug_sample(){
 
 
 double sample_sphere(glm::vec3 position) {
+
     return std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2) - 1;
 }
 
+double sample_bumps(glm::vec3 position){
+    return 20* (cos(position.x) + cos(position.y) + cos(position.z));
+}
 
 
 
@@ -229,3 +233,8 @@ std::vector<Triangle> march(Cube cell, double isovalue) {
     return triangles;
 
 }
+
+
+
+
+

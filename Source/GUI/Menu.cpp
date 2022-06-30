@@ -32,15 +32,16 @@ void Menu::update() {
     ImGui::Text("Select options below \n\n");
 
 
-    if(ImGui::Button("Begin")){
-        start = true;
+    sphere_btn = ImGui::Button("Sphere");    ImGui::SameLine();
+    bumps_btn = ImGui::Button("Bumps");
+    if(sphere_btn){
+        model = 0;
     }
-    ImGui::SameLine();
-    if(ImGui::Button("Reset")){
-        reset = true;
+    if(bumps_btn){
+        model = 1;
     }
 
-    isoChanging = ImGui::SliderFloat("Isovalue", &iso, 0.01f, 200.0f);
+    isoChanging = ImGui::SliderFloat("Isovalue", &iso, -200.0f, 200.0f);
 
     ImGui::NewLine();
     // Debug vertices

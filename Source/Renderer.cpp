@@ -186,6 +186,7 @@ void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
         data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
+
         data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
@@ -271,8 +272,21 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
         update_tri_buffer(tri_buffer, g.iso);
     }
 
+    // Regenerate with different functions
+    if(g.sphere_btn || g.bumps_btn){
+        std::vector<Cube> new_cells;
 
+        if(g.model == 0)
+            new_cells = generate_samples(10, sample_sphere);
+        if(g.model == 1)
+            new_cells = generate_samples(10, sample_bumps);
 
+        setCells(new_cells);
+        update_points_buffer(points_buffer, g.iso);
+        update_tri_buffer(tri_buffer, g.iso);
+    }
+
+    // Debug vertices controller
     for(int i=0; i < 8; i++){
         if(g.debug_clicked[i])
         {
@@ -405,6 +419,7 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
 }
 
 void Renderer::setCells(std::vector<Cube> c) {
+    cells.clear();
     for(auto& cube : c)
         cells.push_back(cube);
 

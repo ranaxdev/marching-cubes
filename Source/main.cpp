@@ -56,7 +56,7 @@ public:
 
 
         // Main sample
-        samples = generate_sphere_samples(10);
+        samples = generate_samples(10, sample_sphere);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();

@@ -43,10 +43,11 @@ static const std::uint32_t edges[12][2] =
         {0,4}, {1,5}, {2,6}, {3,7}
         };
 
-std::vector<Cube> generate_sphere_samples(int grid_size);
+std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3));
 Cube generate_debug_sample();
 
 double sample_sphere(glm::vec3 position);
+double sample_bumps(glm::vec3 position);
 glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sample2, double isovalue);
 
 std::vector<Triangle> march(Cube cell, double isovalue);
@@ -346,7 +347,6 @@ static const int triTable[256][16] =
          {0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
-
 
 
 #endif

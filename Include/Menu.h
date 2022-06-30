@@ -10,8 +10,10 @@ public:
     ImVec2 size;
     ImVec2 pos;
 
-    bool start = false;
-    bool reset = false;
+
+    int model = 0;
+    bool sphere_btn = false;
+    bool bumps_btn = false;
 
 
     bool isoChanging = false;
