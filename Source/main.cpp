@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <algorithm>
 #include <random>
+#include <fstream>
 #include <glm/glm.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -44,6 +45,27 @@ public:
 
     void startup() override {
 
+        // TEMP - read nrrd file
+        FILE* fileptr;
+        char* buffer;
+        long fsize;
+
+        fileptr = fopen(std::string(SRC+"Res/fuel.raw").c_str(), "rb");
+
+        // Get size and reset
+        fseek(fileptr, 0, SEEK_END);
+        fsize = ftell(fileptr);
+        rewind(fileptr);
+
+        buffer = (char*)malloc(fsize*sizeof(std::uint8_t));
+
+        int c = fread(buffer, sizeof(std::uint8_t), fsize/sizeof(std::uint8_t), fileptr);
+
+
+        for(int i=0; i < fsize; i++)
+            std::printf("%d ", buffer[i]);
+
+
         menu = new Menu();
 
 
@@ -56,7 +78,7 @@ public:
 
 
         // Main sample
-        samples = generate_samples(10, sample_sphere);
+        samples = generate_samples(64, sample_sphere);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
@@ -78,8 +100,8 @@ public:
         R->renderAxis(axis_buffer);
 
         // Main sample
-        R->renderPoints(points_buffer);
-        R->renderLines(lines_buffer);
+//        R->renderPoints(points_buffer);
+//        R->renderLines(lines_buffer);
         R->renderTris(tri_buffer);
 
         // Debug sample

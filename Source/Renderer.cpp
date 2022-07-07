@@ -341,7 +341,7 @@ unsigned int Renderer::prepBuf(std::vector<GLfloat>& data, bool big) {
     // Or just as large as your data
     int to_allocate;
     if(big)
-        to_allocate = ONE_MB;
+        to_allocate = TEN_MB;
     else
         to_allocate = dat_size;
 
