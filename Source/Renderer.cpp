@@ -370,7 +370,7 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
     int previous_size = 4*sizes[i];
 
     // Buffer overflowed
-    if(dat_size >= ONE_MB){
+    if(dat_size >= TEN_MB){
         Logger::log(ERROR, "Buffer overflowed, buffer ID: "+ std::to_string(i), __FILENAME__);
     }
 

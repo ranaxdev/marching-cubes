@@ -47,7 +47,8 @@ public:
 
         // TEMP - read nrrd file
         FILE* fileptr;
-        char* buffer;
+        int*** buffer;
+//        std::uint8_t buffer[42][42][42];
         long fsize;
 
         fileptr = fopen(std::string(SRC+"Res/fuel.raw").c_str(), "rb");
@@ -57,13 +58,11 @@ public:
         fsize = ftell(fileptr);
         rewind(fileptr);
 
-        buffer = (char*)malloc(fsize*sizeof(std::uint8_t));
+        
+
 
         int c = fread(buffer, sizeof(std::uint8_t), fsize/sizeof(std::uint8_t), fileptr);
 
-
-        for(int i=0; i < fsize; i++)
-            std::printf("%d ", buffer[i]);
 
 
         menu = new Menu();
@@ -78,12 +77,13 @@ public:
 
 
         // Main sample
+//        samples = generate_samples2(64, buffer2);
         samples = generate_samples(10, sample_sphere);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer();
-        lines_buffer = R->create_grid_buffer();
+//        lines_buffer = R->create_grid_buffer();
         tri_buffer = R->create_tri_buffer();
     };
 
@@ -100,8 +100,8 @@ public:
         R->renderAxis(axis_buffer);
 
         // Main sample
-        R->renderPoints(points_buffer);
-        R->renderLines(lines_buffer);
+//        R->renderPoints(points_buffer);
+//        R->renderLines(lines_buffer);
         R->renderTris(tri_buffer);
 
         // Debug sample

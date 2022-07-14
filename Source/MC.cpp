@@ -1,5 +1,84 @@
 #include "MC.h"
 
+std::vector<Cube> generate_samples2(int grid_size, double buffer[65][65][65]){
+
+    std::vector<Cube> cells;
+
+    glm::vec3 v = glm::vec3(-grid_size/2.0f, -grid_size/2.0f, -grid_size/2.0f);
+
+    for(int y = 0; y < grid_size; y++){
+
+        for(int x =0 ; x < grid_size; x++){
+            Cube cell{
+                {
+                    v+baseVertices[0],
+                    v+baseVertices[1],
+                    v+baseVertices[2],
+                    v+baseVertices[3],
+                    v+baseVertices[4],
+                    v+baseVertices[5],
+                    v+baseVertices[6],
+                    v+baseVertices[7]
+                    }
+                    ,
+                    {
+                    static_cast<double>(buffer[x][y][0]),
+                    static_cast<double>(buffer[x+1][y][0]),
+                    static_cast<double>(buffer[x+1][y+1][0]),
+                    static_cast<double>(buffer[x][y+1][0]),
+                    static_cast<double>(buffer[x][y][1]),
+                    static_cast<double>(buffer[x+1][y][1]),
+                    static_cast<double>(buffer[x+1][y+1][1]),
+                    static_cast<double>(buffer[x][y+1][1])
+                    }
+            };
+            cells.push_back(cell);
+
+            for(int z =0; z < grid_size; z++){
+                v.z += 1.0f;
+
+                Cube cell2{
+                    {
+                        v+baseVertices[0],
+                        v+baseVertices[1],
+                        v+baseVertices[2],
+                        v+baseVertices[3],
+                        v+baseVertices[4],
+                        v+baseVertices[5],
+                        v+baseVertices[6],
+                        v+baseVertices[7]
+                        }
+                        ,
+                        {
+                        static_cast<double>(buffer[x][y][z]),
+                        static_cast<double>(buffer[x+1][y][z]),
+                        static_cast<double>(buffer[x+1][y+1][z]),
+                        static_cast<double>(buffer[x][y+1][z]),
+                        static_cast<double>(buffer[x][y][z+1]),
+                        static_cast<double>(buffer[x+1][y][z+1]),
+                        static_cast<double>(buffer[x+1][y+1][z+1]),
+                        static_cast<double>(buffer[x][y+1][z+1])
+                        }
+                };
+
+                cells.push_back(cell2);
+
+            }
+
+            v.x += 1.0f;
+            v.z = -grid_size/2.0f;
+
+        }
+
+        v.x = -grid_size/2.0f;
+        v.z = -grid_size/2.0f;
+        v.y += 1.0f;
+
+    }
+    return cells;
+}
+
+
 /*
  * Function: x^2 + y^2 + z^2 -1 = 0
  * pair -> vec3 (pos), float (sampled val)
