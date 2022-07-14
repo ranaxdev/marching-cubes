@@ -44,7 +44,7 @@ static const std::uint32_t edges[12][2] =
         };
 
 std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3));
-std::vector<Cube> generate_samples2(int grid_size, double buffer[65][65][65]);
+std::vector<Cube> generate_samples2(int grid_size, std::uint8_t*** buffer);
 
 Cube generate_debug_sample();
 

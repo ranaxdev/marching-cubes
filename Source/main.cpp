@@ -47,21 +47,42 @@ public:
 
         // TEMP - read nrrd file
         FILE* fileptr;
-        int*** buffer;
+        std::uint8_t*** buffer = NULL;
 //        std::uint8_t buffer[42][42][42];
         long fsize;
 
-        fileptr = fopen(std::string(SRC+"Res/fuel.raw").c_str(), "rb");
+        fileptr = fopen(std::string(SRC+"Res/nucleon.raw").c_str(), "rb");
 
         // Get size and reset
         fseek(fileptr, 0, SEEK_END);
         fsize = ftell(fileptr);
         rewind(fileptr);
 
-        
 
+        int NX = 41;
+        int NY = 41;
+        int NZ = 41;
+        int c;
+        buffer = static_cast<uint8_t ***>(malloc(NX * sizeof(std::uint8_t **)));
 
-        int c = fread(buffer, sizeof(std::uint8_t), fsize/sizeof(std::uint8_t), fileptr);
+        for(int i=0; i < NX; i++)
+            buffer[i] = static_cast<uint8_t **>(malloc(NY * sizeof(std::uint8_t *)));
+        for(int i=0; i < NX; i++)
+            for(int j=0; j < NY; j++)
+                buffer[i][j] = static_cast<uint8_t *>(malloc(NZ * sizeof(std::uint8_t)));
+
+        for(int k=0; k < NZ; k++)
+        {
+            for(int j=0; j < NY; j++){
+                for(int i=0; i < NX; i++){
+                    if((c = fgetc(fileptr)) == EOF){
+                        break;
+                    }
+                    buffer[i][j][k] = c;
+                }
+            }
+        }
+
 
 
 
@@ -77,8 +98,8 @@ public:
 
 
         // Main sample
-//        samples = generate_samples2(64, buffer2);
-        samples = generate_samples(10, sample_sphere);
+        samples = generate_samples2(41, buffer);
+//        samples = generate_samples(10, sample_sphere);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();

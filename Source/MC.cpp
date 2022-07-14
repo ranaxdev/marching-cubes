@@ -1,14 +1,14 @@
 #include "MC.h"
 
-std::vector<Cube> generate_samples2(int grid_size, double buffer[65][65][65]){
+std::vector<Cube> generate_samples2(int grid_size, std::uint8_t*** buffer){
 
     std::vector<Cube> cells;
 
     glm::vec3 v = glm::vec3(-grid_size/2.0f, -grid_size/2.0f, -grid_size/2.0f);
 
-    for(int y = 0; y < grid_size; y++){
+    for(int y = 0; y < grid_size-1; y++){
 
-        for(int x =0 ; x < grid_size; x++){
+        for(int x =0 ; x < grid_size-1; x++){
             Cube cell{
                 {
                     v+baseVertices[0],
@@ -34,7 +34,7 @@ std::vector<Cube> generate_samples2(int grid_size, double buffer[65][65][65]){
             };
             cells.push_back(cell);
 
-            for(int z =0; z < grid_size; z++){
+            for(int z =0; z < grid_size-1; z++){
                 v.z += 1.0f;
 
                 Cube cell2{
