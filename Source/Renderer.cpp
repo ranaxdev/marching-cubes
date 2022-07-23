@@ -153,18 +153,22 @@ GLuint Renderer::create_tri_buffer() {
     for(auto& t: generated_tris){
         data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n0.x); data.push_back(t.n0.y); data.push_back(t.n0.z);
 
         data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n1.x); data.push_back(t.n1.y); data.push_back(t.n1.z);
+
 
         data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n2.x); data.push_back(t.n2.y); data.push_back(t.n2.z);
 
     }
     GLuint loc = prepBuf(data, true);
 
 
-    formatBuf(loc, 3, {0, 1});
+    formatBuf(loc, 3, {0, 1, 2});
 
     // Save size
     sizes[loc] = data.size();
@@ -179,19 +183,28 @@ void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
 
         for(auto& i : tris)
             generated_tris.push_back(i);
+
     }
+    // Update normals
+//    for(auto& t : generated_tris){
+//        glm::vec3 normal = calc_normal(t);
+//        t.normal = normal;
+//    }
 
     std::vector<GLfloat> data;
     for(auto& t: generated_tris){
         data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n0.x); data.push_back(t.n0.y); data.push_back(t.n0.z);
 
 
         data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n1.x); data.push_back(t.n1.y); data.push_back(t.n1.z);
 
         data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+        data.push_back(t.n2.x); data.push_back(t.n2.y); data.push_back(t.n2.z);
 
     }
 
@@ -236,6 +249,7 @@ void Renderer::renderLines(GLuint buffer) {
 
     shader_axis.bind();
     shader_axis.setMat4(20, qaiser::Harness::VP);
+
     glPointSize(16.0f);
 
 
@@ -247,9 +261,16 @@ void Renderer::renderLines(GLuint buffer) {
 
 void Renderer::renderTris(GLuint buffer) {
 
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
-    shader_axis.bind();
-    shader_axis.setMat4(20, qaiser::Harness::VP);
+
+    shader_phong.bind();
+    shader_phong.setMat4(20, qaiser::Harness::VP);
+    shader_phong.setMat4(21, trans);
+    shader_phong.setVec3(22, qaiser::Harness::campos);
+
+
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
@@ -418,6 +439,8 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
     glVertexArrayVertexBuffer(VAO, 0, buf[loc], 0, strides[loc]);
 }
 
+
+
 void Renderer::setCells(std::vector<Cube> c) {
     cells.clear();
     for(auto& cube : c)
@@ -429,6 +452,12 @@ void Renderer::setCells(std::vector<Cube> c) {
         for(auto& i : tris)
             generated_tris.push_back(i);
     }
+
+    // Update normals
+//    for(auto& t : generated_tris){
+//        glm::vec3 normal = calc_normal(t);
+//        t.normal = normal;
+//    }
 }
 
 

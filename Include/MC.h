@@ -15,11 +15,14 @@
 struct Cube{
     glm::vec3 vertices[8];
     double samples[8];
+    glm::vec3 normals[8];
+
 };
 
 
 struct Triangle{
     glm::vec3 v0, v1, v2;
+    glm::vec3 n0, n1, n2;
 };
 
 static const glm::vec3 baseVertices[8] =
@@ -45,12 +48,18 @@ static const std::uint32_t edges[12][2] =
 
 std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3));
 std::vector<Cube> generate_samples2(int grid_size, std::uint8_t*** buffer);
+std::vector<Cube> generate_samples3(int grid_size, std::uint8_t*** buffer);
+
 
 Cube generate_debug_sample();
 
 double sample_sphere(glm::vec3 position);
 double sample_bumps(glm::vec3 position);
+double sample_surf(glm::vec3 position);
+
 glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sample2, double isovalue);
+
+glm::vec3 calc_normal(const Triangle& t);
 
 std::vector<Triangle> march(Cube cell, double isovalue);
 

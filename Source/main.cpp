@@ -47,11 +47,10 @@ public:
 
         // TEMP - read nrrd file
         FILE* fileptr;
-        std::uint8_t*** buffer = NULL;
-//        std::uint8_t buffer[42][42][42];
+        std::uint8_t*** buffer = nullptr;
         long fsize;
 
-        fileptr = fopen(std::string(SRC+"Res/nucleon.raw").c_str(), "rb");
+        fileptr = fopen(std::string(SRC+"Res/fuel.raw").c_str(), "rb");
 
         // Get size and reset
         fseek(fileptr, 0, SEEK_END);
@@ -59,9 +58,9 @@ public:
         rewind(fileptr);
 
 
-        int NX = 41;
-        int NY = 41;
-        int NZ = 41;
+        int NX = 64;
+        int NY = 64;
+        int NZ = 64;
         int c;
         buffer = static_cast<uint8_t ***>(malloc(NX * sizeof(std::uint8_t **)));
 
@@ -98,13 +97,13 @@ public:
 
 
         // Main sample
-        samples = generate_samples2(41, buffer);
-//        samples = generate_samples(10, sample_sphere);
+//        samples = generate_samples2(64, buffer);
+        samples = generate_samples3(64, buffer);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer();
-//        lines_buffer = R->create_grid_buffer();
+        lines_buffer = R->create_grid_buffer();
         tri_buffer = R->create_tri_buffer();
     };
 

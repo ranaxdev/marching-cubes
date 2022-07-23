@@ -69,6 +69,7 @@ private:
     // Shaders
     // REMINDER: change environment variable SRC in globals to setup shaders correctly
     Shader shader_axis = Shader(SRC+"Shaders/vert.glsl", SRC+"Shaders/frag.glsl");
+    Shader shader_phong = Shader(SRC+"Shaders/vert0.glsl", SRC+"Shaders/frag0.glsl");
 
     // Colors
     glm::vec4 red = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
