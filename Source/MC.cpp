@@ -269,7 +269,7 @@ std::vector<Triangle> march(Cube cell, double isovalue) {
     int cube_index = 0;
 
     glm::vec3 vertices[12] = {glm::vec3(0.0f)};
-    glm::vec3 normals[12] = {glm::vec3(0.0f)};
+//    glm::vec3 normals[12] = {glm::vec3(0.0f)};
 
     // Index into edge table (8-bit number)
     if(cell.samples[0] < isovalue)
@@ -298,72 +298,72 @@ std::vector<Triangle> march(Cube cell, double isovalue) {
     // Vertices where surface intersects cube
     if(edgeTable[cube_index] & 1){
         vertices[0] = vertex_lerp(cell.vertices[0], cell.vertices[1], cell.samples[0], cell.samples[1], isovalue);
-        normals[0] = vertex_lerp(cell.normals[0], cell.normals[1], cell.samples[0], cell.samples[1], isovalue);
+//        normals[0] = vertex_lerp(cell.normals[0], cell.normals[1], cell.samples[0], cell.samples[1], isovalue);
     }
 
     if(edgeTable[cube_index] & 2){
         vertices[1] = vertex_lerp(cell.vertices[1], cell.vertices[2], cell.samples[1], cell.samples[2], isovalue);
-        normals[1] = vertex_lerp(cell.normals[1], cell.normals[2], cell.samples[1], cell.samples[2], isovalue);
+//        normals[1] = vertex_lerp(cell.normals[1], cell.normals[2], cell.samples[1], cell.samples[2], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 4){
         vertices[2] = vertex_lerp(cell.vertices[2], cell.vertices[3], cell.samples[2], cell.samples[3], isovalue);
-        normals[2] = vertex_lerp(cell.normals[2], cell.normals[3], cell.samples[2], cell.samples[3], isovalue);
+//        normals[2] = vertex_lerp(cell.normals[2], cell.normals[3], cell.samples[2], cell.samples[3], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 8){
         vertices[3] = vertex_lerp(cell.vertices[3], cell.vertices[0], cell.samples[3], cell.samples[0], isovalue);
-        normals[3] = vertex_lerp(cell.normals[3], cell.normals[0], cell.samples[3], cell.samples[0], isovalue);
+//        normals[3] = vertex_lerp(cell.normals[3], cell.normals[0], cell.samples[3], cell.samples[0], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 16){
         vertices[4] = vertex_lerp(cell.vertices[4], cell.vertices[5], cell.samples[4], cell.samples[5], isovalue);
-        normals[4] = vertex_lerp(cell.normals[4], cell.normals[5], cell.samples[4], cell.samples[5], isovalue);
+//        normals[4] = vertex_lerp(cell.normals[4], cell.normals[5], cell.samples[4], cell.samples[5], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 32){
         vertices[5] = vertex_lerp(cell.vertices[5], cell.vertices[6], cell.samples[5], cell.samples[6], isovalue);
-        normals[5] = vertex_lerp(cell.normals[5], cell.normals[6], cell.samples[5], cell.samples[6], isovalue);
+//        normals[5] = vertex_lerp(cell.normals[5], cell.normals[6], cell.samples[5], cell.samples[6], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 64){
         vertices[6] = vertex_lerp(cell.vertices[6], cell.vertices[7], cell.samples[6], cell.samples[7], isovalue);
-        normals[6] = vertex_lerp(cell.normals[6], cell.normals[7], cell.samples[6], cell.samples[7], isovalue);
+//        normals[6] = vertex_lerp(cell.normals[6], cell.normals[7], cell.samples[6], cell.samples[7], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 128){
         vertices[7] = vertex_lerp(cell.vertices[7], cell.vertices[4], cell.samples[7], cell.samples[4], isovalue);
-        normals[7] = vertex_lerp(cell.normals[7], cell.normals[4], cell.samples[7], cell.samples[4], isovalue);
+//        normals[7] = vertex_lerp(cell.normals[7], cell.normals[4], cell.samples[7], cell.samples[4], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 256){
         vertices[8] = vertex_lerp(cell.vertices[0], cell.vertices[4], cell.samples[0], cell.samples[4], isovalue);
-        normals[8] = vertex_lerp(cell.normals[0], cell.normals[4], cell.samples[0], cell.samples[4], isovalue);
+//        normals[8] = vertex_lerp(cell.normals[0], cell.normals[4], cell.samples[0], cell.samples[4], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 512){
         vertices[9] = vertex_lerp(cell.vertices[1], cell.vertices[5], cell.samples[1], cell.samples[5], isovalue);
-        normals[9] = vertex_lerp(cell.normals[1], cell.normals[5], cell.samples[1], cell.samples[5], isovalue);
+//        normals[9] = vertex_lerp(cell.normals[1], cell.normals[5], cell.samples[1], cell.samples[5], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 1024){
         vertices[10] = vertex_lerp(cell.vertices[2], cell.vertices[6], cell.samples[2], cell.samples[6], isovalue);
-        normals[10] = vertex_lerp(cell.normals[2], cell.normals[6], cell.samples[2], cell.samples[6], isovalue);
+//        normals[10] = vertex_lerp(cell.normals[2], cell.normals[6], cell.samples[2], cell.samples[6], isovalue);
 
     }
 
     if(edgeTable[cube_index] & 2048){
         vertices[11] = vertex_lerp(cell.vertices[3], cell.vertices[7], cell.samples[3], cell.samples[7], isovalue);
-        normals[11] = vertex_lerp(cell.normals[3], cell.normals[7], cell.samples[3], cell.samples[7], isovalue);
+//        normals[11] = vertex_lerp(cell.normals[3], cell.normals[7], cell.samples[3], cell.samples[7], isovalue);
 
     }
 
@@ -375,9 +375,9 @@ std::vector<Triangle> march(Cube cell, double isovalue) {
         t.v1 = vertices[triTable[cube_index][i+1]];
         t.v2 = vertices[triTable[cube_index][i+2]];
 
-        t.n0 = normals[triTable[cube_index][i]];
-        t.n1 = normals[triTable[cube_index][i+1]];
-        t.n2 = normals[triTable[cube_index][i+2]];
+//        t.n0 = normals[triTable[cube_index][i]];
+//        t.n1 = normals[triTable[cube_index][i+1]];
+//        t.n2 = normals[triTable[cube_index][i+2]];
 
         triangles.push_back(t);
     }

@@ -98,7 +98,9 @@ public:
 
         // Main sample
 //        samples = generate_samples2(64, buffer);
-        samples = generate_samples3(64, buffer);
+//        samples = generate_samples3(64, buffer);
+
+        generate_samples(20, sample_sphere);
         R->setCells(samples);
 
         axis_buffer = R->enableAxis();
@@ -120,8 +122,8 @@ public:
         R->renderAxis(axis_buffer);
 
         // Main sample
-//        R->renderPoints(points_buffer);
-//        R->renderLines(lines_buffer);
+        R->renderPoints(points_buffer);
+        R->renderLines(lines_buffer);
         R->renderTris(tri_buffer);
 
         // Debug sample
