@@ -48,14 +48,15 @@ GLuint Renderer::enableAxis() {
 
 GLuint Renderer::create_point_buffer() {
     std::vector<GLfloat> data;
-    for(auto& c: cells){
+
+    for(int c=0; c < num_cells; c++){
         for(int i=0; i < 8; i++){
-            data.push_back(c.vertices[i].x);
-            data.push_back(c.vertices[i].y);
-            data.push_back(c.vertices[i].z);
+            data.push_back(cells[c]->vertices[i].x);
+            data.push_back(cells[c]->vertices[i].y);
+            data.push_back(cells[c]->vertices[i].z);
 
             glm::vec3 color;
-            if(c.samples[i] > 25)
+            if(cells[c]->samples[i] > 0.010)
                 color = glm::vec3(0.0f);
             else
                 color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -63,8 +64,6 @@ GLuint Renderer::create_point_buffer() {
             data.push_back(color.x);
             data.push_back(color.y);
             data.push_back(color.z);
-
-
         }
     }
 
@@ -82,14 +81,15 @@ GLuint Renderer::create_point_buffer() {
 
 void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
     std::vector<GLfloat> data;
-    for(auto& c: cells){
+
+    for(int c=0; c < num_cells; c++){
         for(int i=0; i < 8; i++){
-            data.push_back(c.vertices[i].x);
-            data.push_back(c.vertices[i].y);
-            data.push_back(c.vertices[i].z);
+            data.push_back(cells[c]->vertices[i].x);
+            data.push_back(cells[c]->vertices[i].y);
+            data.push_back(cells[c]->vertices[i].z);
 
             glm::vec3 color;
-            if(c.samples[i] > isovalue)
+            if(cells[c]->samples[i] > isovalue)
                 color = glm::vec3(0.0f);
             else
                 color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -97,14 +97,12 @@ void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
             data.push_back(color.x);
             data.push_back(color.y);
             data.push_back(color.z);
-
         }
     }
 
-    editBuf(data, buffer);
+   editBuf(data, buffer);
     // update data size
     sizes[buffer] = data.size();
-
 }
 
 
@@ -113,18 +111,18 @@ void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
  */
 GLuint Renderer::create_grid_buffer() {
     std::vector<GLfloat> data;
-    for(auto& c : cells){
+    for(int c =0; c < num_cells; c++){
         for(int e = 0; e < 12; e++){
-            data.push_back(c.vertices[edges[e][0]].x); // first vertex of edge
-            data.push_back(c.vertices[edges[e][0]].y);
-            data.push_back(c.vertices[edges[e][0]].z);
+            data.push_back(cells[c]->vertices[edges[e][0]].x); // first vertex of edge
+            data.push_back(cells[c]->vertices[edges[e][0]].y);
+            data.push_back(cells[c]->vertices[edges[e][0]].z);
 
             data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
 
-            data.push_back(c.vertices[edges[e][1]].x); // second vertex of edge
-            data.push_back(c.vertices[edges[e][1]].y);
-            data.push_back(c.vertices[edges[e][1]].z);
+            data.push_back(cells[c]->vertices[edges[e][1]].x); // second vertex of edge
+            data.push_back(cells[c]->vertices[edges[e][1]].y);
+            data.push_back(cells[c]->vertices[edges[e][1]].z);
 
             data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
@@ -145,25 +143,58 @@ GLuint Renderer::create_grid_buffer() {
 }
 
 
+void Renderer::update_grid_buffer(GLuint buffer, double isovalue) {
+    std::vector<GLfloat> data;
+    for(int c =0; c < num_cells; c++){
+        for(int e = 0; e < 12; e++){
+            data.push_back(cells[c]->vertices[edges[e][0]].x); // first vertex of edge
+            data.push_back(cells[c]->vertices[edges[e][0]].y);
+            data.push_back(cells[c]->vertices[edges[e][0]].z);
+
+            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
+
+
+            data.push_back(cells[c]->vertices[edges[e][1]].x); // second vertex of edge
+            data.push_back(cells[c]->vertices[edges[e][1]].y);
+            data.push_back(cells[c]->vertices[edges[e][1]].z);
+
+            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
+
+        }
+    }
+
+    editBuf(data, buffer);
+    // update data size
+    sizes[buffer] = data.size();
+}
+
+
+
+
 /*
  * Takes triangle data generated from marching cubes algorithm and puts it in a buffer
  */
 GLuint Renderer::create_tri_buffer() {
     std::vector<GLfloat> data;
-    for(auto& t: generated_tris){
-        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n0.x); data.push_back(t.n0.y); data.push_back(t.n0.z);
+    for(int c=0; c < num_cells; c++){
+        for(int t=0; t < cells[c]->num_tris*3; t+=3){
+            // push vertices -> colors -> normals
+            // V0
+            data.push_back(cells[c]->tris[t].x); data.push_back(cells[c]->tris[t].y); data.push_back(cells[c]->tris[t].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t].x); data.push_back(cells[c]->normals[t].y); data.push_back(cells[c]->normals[t].z);
 
-        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n1.x); data.push_back(t.n1.y); data.push_back(t.n1.z);
+            // V1
+            data.push_back(cells[c]->tris[t+1].x); data.push_back(cells[c]->tris[t+1].y); data.push_back(cells[c]->tris[t+1].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t+1].x); data.push_back(cells[c]->normals[t+1].y); data.push_back(cells[c]->normals[t+1].z);
 
+            // V2
+            data.push_back(cells[c]->tris[t+2].x); data.push_back(cells[c]->tris[t+2].y); data.push_back(cells[c]->tris[t+2].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t+2].x); data.push_back(cells[c]->normals[t+2].y); data.push_back(cells[c]->normals[t+2].z);
 
-        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n2.x); data.push_back(t.n2.y); data.push_back(t.n2.z);
-
+        }
     }
     GLuint loc = prepBuf(data, true);
 
@@ -177,35 +208,27 @@ GLuint Renderer::create_tri_buffer() {
 }
 
 void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
-    generated_tris.clear();
-    for(auto& sample: cells){
-        std::vector<Triangle> tris = march(sample, isovalue);
-
-        for(auto& i : tris)
-            generated_tris.push_back(i);
-
-    }
-    // Update normals
-//    for(auto& t : generated_tris){
-//        glm::vec3 normal = calc_normal(t);
-//        t.normal = normal;
-//    }
 
     std::vector<GLfloat> data;
-    for(auto& t: generated_tris){
-        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n0.x); data.push_back(t.n0.y); data.push_back(t.n0.z);
+    for(int c=0; c < num_cells; c++){
+        for(int t=0; t < cells[c]->num_tris*3; t+=3){
+            // push vertices -> colors -> normals
+            // V0
+            data.push_back(cells[c]->tris[t].x); data.push_back(cells[c]->tris[t].y); data.push_back(cells[c]->tris[t].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t].x); data.push_back(cells[c]->normals[t].y); data.push_back(cells[c]->normals[t].z);
 
+            // V1
+            data.push_back(cells[c]->tris[t+1].x); data.push_back(cells[c]->tris[t+1].y); data.push_back(cells[c]->tris[t+1].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t+1].x); data.push_back(cells[c]->normals[t+1].y); data.push_back(cells[c]->normals[t+1].z);
 
-        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n1.x); data.push_back(t.n1.y); data.push_back(t.n1.z);
+            // V2
+            data.push_back(cells[c]->tris[t+2].x); data.push_back(cells[c]->tris[t+2].y); data.push_back(cells[c]->tris[t+2].z);
+            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
+            data.push_back(cells[c]->normals[t+2].x); data.push_back(cells[c]->normals[t+2].y); data.push_back(cells[c]->normals[t+2].z);
 
-        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
-        data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
-        data.push_back(t.n2.x); data.push_back(t.n2.y); data.push_back(t.n2.z);
-
+        }
     }
 
 
@@ -262,7 +285,7 @@ void Renderer::renderLines(GLuint buffer) {
 void Renderer::renderTris(GLuint buffer) {
 
     glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
+//    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
 
     shader_phong.bind();
@@ -284,42 +307,50 @@ void Renderer::renderTris(GLuint buffer) {
  * Buffer adaption (later):
  *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
  */
-void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer) {
+void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuint grid_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer) {
     g.update();
 
     if(g.isoChanging)
     {
+        for(int i=0; i < num_cells; i++){
+            delete cells[i];
+        }
+        delete[] cells;
+
+        cells = generate_samples(glm::vec3(0.0f), 10, 1.0, sample_sphere, g.iso);
+
         update_points_buffer(points_buffer, g.iso);
+        update_grid_buffer(grid_buffer, g.iso);
         update_tri_buffer(tri_buffer, g.iso);
     }
 
     // Regenerate with different functions
-    if(g.sphere_btn || g.bumps_btn){
-        std::vector<Cube> new_cells;
-
-        if(g.model == 0)
-            new_cells = generate_samples(10, sample_sphere);
-        if(g.model == 1)
-            new_cells = generate_samples(10, sample_bumps);
-
-        setCells(new_cells);
-        update_points_buffer(points_buffer, g.iso);
-        update_tri_buffer(tri_buffer, g.iso);
-    }
-
-    // Debug vertices controller
-    for(int i=0; i < 8; i++){
-        if(g.debug_clicked[i])
-        {
-            if(*g.debug_vertices[i])
-                debug_cell.samples[i] = 9;
-            else
-                debug_cell.samples[i] = 11;
-
-            update_debug_points(debug_points_buffer);
-            update_debug_tris(debug_tri_buffer);
-        }
-    }
+//    if(g.sphere_btn || g.bumps_btn){
+//        std::vector<Cube> new_cells;
+//
+//        if(g.model == 0)
+//            new_cells = generate_samples(20, sample_sphere, g.iso);
+//        if(g.model == 1)
+//            new_cells = generate_samples(20 , sample_bumps, g.iso);
+//
+//        setCells(new_cells);
+//        update_points_buffer(points_buffer, g.iso);
+//        update_tri_buffer(tri_buffer, g.iso);
+//    }
+//
+//    // Debug vertices controller
+//    for(int i=0; i < 8; i++){
+//        if(g.debug_clicked[i])
+//        {
+//            if(*g.debug_vertices[i])
+//                debug_cell.samples[i] = 9;
+//            else
+//                debug_cell.samples[i] = 11;
+//
+//            update_debug_points(debug_points_buffer);
+//            update_debug_tris(debug_tri_buffer);
+//        }
+//    }
 }
 
 
@@ -441,23 +472,10 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
 
 
 
-void Renderer::setCells(std::vector<Cube> c) {
-    cells.clear();
-    for(auto& cube : c)
-        cells.push_back(cube);
+void Renderer::setCells(Cube** c, int num_cell) {
 
-    for(auto& sample: cells){
-        std::vector<Triangle> tris = march(sample, 25);
-
-        for(auto& i : tris)
-            generated_tris.push_back(i);
-    }
-
-    // Update normals
-//    for(auto& t : generated_tris){
-//        glm::vec3 normal = calc_normal(t);
-//        t.normal = normal;
-//    }
+    cells = c;
+    num_cells = num_cell;
 }
 
 
@@ -475,7 +493,7 @@ void Renderer::setCells(std::vector<Cube> c) {
 /*
  * DEBUGGING METHODS
  */
-
+/*
 void Renderer::setDebugCell(Cube cell) {
     this->debug_cell = cell;
 }
@@ -618,10 +636,7 @@ void Renderer::update_debug_tris(GLuint buffer) {
     sizes[buffer] = data.size();
 }
 
-
-
-
-
+*/
 
 
 

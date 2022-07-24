@@ -24,9 +24,10 @@ public:
 
     void update_points_buffer(GLuint buffer, double isovalue);
     void update_tri_buffer(GLuint buffer, double isovalue);
+    void update_grid_buffer(GLuint buffer, double isovalue);
 
 
-    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer);
+    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer, GLuint grid_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
@@ -39,7 +40,7 @@ public:
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
-    void setCells(std::vector<Cube> c);
+    void setCells(Cube** cells, int num_cells);
 
 
     // Debugging cell
@@ -61,8 +62,8 @@ private:
     std::vector<GLsizei> sizes;
 
     // Marching cubes data
-    std::vector<Cube> cells;
-    std::vector<Triangle> generated_tris;
+    Cube** cells;
+    int num_cells;
     Cube debug_cell;
     bool debug = false;
 

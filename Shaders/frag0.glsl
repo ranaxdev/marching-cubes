@@ -12,7 +12,7 @@ void main(void){
 
     vec3 lightcol = vec3(1.0f, 1.0f, 1.0f);
     vec3 objectcol = vec3(vcolor.xyz);
-    vec3 lightpos = vec3(10.0f, 25.0f, 0.0f);
+    vec3 lightpos = vec3(0.0f, 25.0f, 0.0f);
 
     float ambient_s = 0.1;
     vec3 ambient = ambient_s * lightcol;

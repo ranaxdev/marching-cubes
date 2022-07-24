@@ -28,7 +28,7 @@ public:
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
     Menu* menu;
 
-    std::vector<Cube> samples;
+    Cube** cells;
     std::vector<Triangle> t;
 
     // MC buffers
@@ -89,19 +89,19 @@ public:
 
 
         // Cell debugging sample
-        R->enableDebug();
-        R->setDebugCell(generate_debug_sample());
-        debug_points_buffer = R->create_debug_point_buffer();
-        debug_grid_buffer = R->create_debug_grid_buffer();
-        debug_tri_buffer = R->create_debug_tri_buffer();
+//        R->enableDebug();
+//        R->setDebugCell(generate_debug_sample());
+//        debug_points_buffer = R->create_debug_point_buffer();
+//        debug_grid_buffer = R->create_debug_grid_buffer();
+//        debug_tri_buffer = R->create_debug_tri_buffer();
 
 
         // Main sample
 //        samples = generate_samples2(64, buffer);
 //        samples = generate_samples3(64, buffer);
 
-        generate_samples(20, sample_sphere);
-        R->setCells(samples);
+        cells = generate_samples(glm::vec3(0.0f), 10, 1.0, sample_sphere, 0.010);
+        R->setCells(cells, 10*10*10);
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer();
@@ -116,7 +116,7 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu, points_buffer, tri_buffer, debug_points_buffer, debug_tri_buffer);
+        R->renderGUI(*menu, points_buffer, tri_buffer, lines_buffer, debug_points_buffer, debug_tri_buffer);
 
         // Axis
         R->renderAxis(axis_buffer);
@@ -127,9 +127,9 @@ public:
         R->renderTris(tri_buffer);
 
         // Debug sample
-        R->renderPoints(debug_points_buffer);
-        R->renderLines(debug_grid_buffer);
-        R->renderTris(debug_tri_buffer);
+//        R->renderPoints(debug_points_buffer);
+//        R->renderLines(debug_grid_buffer);
+//        R->renderTris(debug_tri_buffer);
     }
 };
 

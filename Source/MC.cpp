@@ -1,222 +1,24 @@
 #include "MC.h"
 
+#include <cmath>
 
-/*
- * This routine creates the grid cells which will be triangulated when march() is called
- * Each cell (cube) has 8 vertices - the positions are calculated in the inner-most loop (with offsets)
- * The buffer (isovalues) were read in as a 3D array so indexing it to it mimics the cube offsets too
- */
-std::vector<Cube> generate_samples3(int grid_size, std::uint8_t*** buffer)
-{
-    std::vector<Cube> cells;
-    glm::vec3 curr_vec;
-    glm::vec3 curr_norm;
+Cube::Cube() {}
 
-    for(int y = 0; y < grid_size-1; y++){
-        for(int x = 0; x < grid_size-1; x++){
-            for(int z = 0; z < grid_size-1; z++){
-                Cube cell{};
-                // Grid cell vertices
-                curr_vec.x = (float) x;
-                curr_vec.y = (float) y;
-                curr_vec.z = (float) z;
-                cell.vertices[0] = curr_vec;
+Cube::Cube(glm::vec3 start, glm::vec3 *tris, glm::vec3* normals, int num_tris)
+: v_start(start), tris(tris), normals(normals), num_tris(num_tris) {
 
-                curr_vec.x = (float) x + 1.0f;
-                curr_vec.y = (float) y;
-                curr_vec.z = (float) z;
-                cell.vertices[1] = curr_vec;
-
-                curr_vec.x = (float) x + 1.0f;
-                curr_vec.y = (float) y + 1.0f;
-                curr_vec.z = (float) z;
-                cell.vertices[2] = curr_vec;
-
-                curr_vec.x = (float) x;
-                curr_vec.y = (float) y + 1.0f;
-                curr_vec.z = (float) z;
-                cell.vertices[3] = curr_vec;
-
-                curr_vec.x = (float) x;
-                curr_vec.y = (float) y;
-                curr_vec.z = (float) z + 1.0f;
-                cell.vertices[4] = curr_vec;
-
-                curr_vec.x = (float) x + 1.0f;
-                curr_vec.y = (float) y;
-                curr_vec.z = (float) z + 1.0f;
-                cell.vertices[5] = curr_vec;
-
-                curr_vec.x = (float) x + 1.0f;
-                curr_vec.y = (float) y + 1.0f;
-                curr_vec.z = (float) z + 1.0f;
-                cell.vertices[6] = curr_vec;
-
-                curr_vec.x = (float) x;
-                curr_vec.y = (float) y + 1.0f;
-                curr_vec.z = (float) z + 1.0f;
-                cell.vertices[7] = curr_vec;
-
-                // Grid cell isovalues
-                cell.samples[0] = buffer[x][y][z];
-                cell.samples[1] = buffer[x + 1][y][z];
-                cell.samples[2] = buffer[x + 1][y + 1][z];
-                cell.samples[3] = buffer[x][y + 1][z];
-                cell.samples[4] = buffer[x][y][z + 1];
-                cell.samples[5] = buffer[x + 1][y][z + 1];
-                cell.samples[6] = buffer[x + 1][y + 1][z + 1];
-                cell.samples[7] = buffer[x][y + 1][z + 1];
-
-                // Grid cell normals
-                if(x == 0 || y == 0 || z == 0){
-                    curr_norm.x = 0.0f; curr_norm.y = 0.0f; curr_norm.z = 0.0f;
-
-                }
-                else{
-                    curr_norm.x = -((float)buffer[x+1][y][z] - (float)buffer[x-1][y][z])/2.0f;
-                    curr_norm.y = -((float)buffer[x][y+1][z] - (float)buffer[x][y-1][z])/2.0f;
-                    curr_norm.z = -((float)buffer[x][y][z+1] - (float)buffer[x][y][z-1])/2.0f;
-                }
-
-                cell.normals[0] = curr_norm;
-                cell.normals[1] = curr_norm;
-                cell.normals[2] = curr_norm;
-                cell.normals[3] = curr_norm;
-                cell.normals[4] = curr_norm;
-                cell.normals[5] = curr_norm;
-                cell.normals[6] = curr_norm;
-                cell.normals[7] = curr_norm;
-
-
-                cells.push_back(cell);
-            }
-        }
-    }
-
-    return cells;
 }
 
 
 
-/*
- * Function: x^2 + y^2 + z^2 -1 = 0
- * pair -> vec3 (pos), float (sampled val)
- */
-std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3)) {
-
-    std::vector<Cube> cells;
-
-    glm::vec3 v = glm::vec3(-grid_size/2.0f, -grid_size/2.0f, -grid_size/2.0f);
-
-    for(int y = 0; y < grid_size; y++){
-
-        for(int x = 0; x < grid_size; x++){
-            Cube cell{
-                {
-                    v+baseVertices[0],
-                    v+baseVertices[1],
-                    v+baseVertices[2],
-                    v+baseVertices[3],
-                    v+baseVertices[4],
-                    v+baseVertices[5],
-                    v+baseVertices[6],
-                    v+baseVertices[7]
-                    }
-                    ,
-                    {
-                    func(v+baseVertices[0]),
-                    func(v+baseVertices[1]),
-                    func(v+baseVertices[2]),
-                    func(v+baseVertices[3]),
-                    func(v+baseVertices[4]),
-                    func(v+baseVertices[5]),
-                    func(v+baseVertices[6]),
-                    func(v+baseVertices[7])
-
-                    }
-            };
-
-            cells.push_back(cell);
-
-            for(int z = 0; z < grid_size-1; z++){
-                v.z += 1.0f;
-                Cube cell2{
-                    {
-                        v+baseVertices[0],
-                        v+baseVertices[1],
-                        v+baseVertices[2],
-                        v+baseVertices[3],
-                        v+baseVertices[4],
-                        v+baseVertices[5],
-                        v+baseVertices[6],
-                        v+baseVertices[7]
-                        }
-                        ,
-                        {
-                        func(v+baseVertices[0]),
-                        func(v+baseVertices[1]),
-                        func(v+baseVertices[2]),
-                        func(v+baseVertices[3]),
-                        func(v+baseVertices[4]),
-                        func(v+baseVertices[5]),
-                        func(v+baseVertices[6]),
-                        func(v+baseVertices[7])
-
-                        }
-                };
-
-                cells.push_back(cell2);
-
-            }
-
-            v.x += 1.0f;
-            v.z = -grid_size/2.0f;
-
-        }
-
-
-        v.x = -grid_size/2.0f;
-        v.z = -grid_size/2.0f;
-        v.y += 1.0f;
-    }
-
-
-    return cells;
-}
-
-Cube generate_debug_sample(){
-    glm::vec3 v = glm::vec3(15.0f, 0.0f, 0.0f);
-    Cube cell{
-        {
-            v+ baseVertices[0],
-            v+ baseVertices[1],
-            v+ baseVertices[2],
-            v+baseVertices[3],
-            v+baseVertices[4],
-            v+baseVertices[5],
-            v+baseVertices[6],
-            v+baseVertices[7]
-            },
-            {
-            11,
-            11,
-            11,
-            11,
-            11,
-            11,
-            11,
-            11
-            }
-    };
-
-    return cell;
-}
-
-
+/* Sampling implicit functions */
 double sample_sphere(glm::vec3 position) {
+    return std::sqrt(std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2)) - 5;
 
-    return std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2) - 1;
+//    return -1*position.x*position.y*position.z + 10;
+
 }
+
 
 double sample_bumps(glm::vec3 position){
     return 20* (cos(position.x) + cos(position.y) + cos(position.z));
@@ -235,11 +37,11 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
     glm::vec3 pos;
     double mu;
 
-    if(std::abs(isovalue - sample1) < 0.00001)
+    if(std::abs(sample1) < 0.000001)
         return pos1;
-    if(std::abs(isovalue - sample2) < 0.00001)
+    if(std::abs(sample2) < 0.000001)
         return pos2;
-    if(std::abs(sample1 - sample2) < 0.00001)
+    if(std::abs(sample1 - sample2) < 0.000001)
         return pos1;
 
     mu = (isovalue - sample1) / (sample2 - sample1);
@@ -252,141 +54,202 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
     return pos;
 }
 
-glm::vec3 calc_normal(const Triangle& t){
+glm::vec3 calc_normal(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2){
     glm::vec3 normal;
 
-    glm::vec3 v0 = t.v1 - t.v0;
-    glm::vec3 v1 = t.v2 - t.v0;
+    glm::vec3 n_v0 = v1 - v0;
+    glm::vec3 n_v1 = v2 - v0;
 
     normal = glm::cross(v0, v1);
-    normal = glm::normalize(normal);
+//    normal = glm::normalize(normal);
     return normal;
 }
 
 
 
-std::vector<Triangle> march(Cube cell, double isovalue) {
+
+
+
+/*
+ * This routine marches a single cube and returns information about the cell
+ * Such as the cube's corner vertex, the triangulated vertices and the normals
+ */
+Cube* march(glm::vec3 cube_start, float cube_length, double*** sdf, double isovalue){
+
+    // One of the cube's corners needed to look into its other corners by offsetting
+    int x = static_cast<int>(cube_start.x);
+    int y = static_cast<int>(cube_start.y);
+    int z = static_cast<int>(cube_start.z);
+
+
+    // Get the vertices, samples and gradients at the cube
+    glm::vec3 vertices[8];
+    double samples[8];
+    int vertexID = 0;
+
+    for(int i=0; i<=1; i++){
+        for(int j=0; j<=1; j++){
+            for(int k=0; k<=1; k++){
+                vertices[vertexID] = cube_length * glm::vec3(x+i, y+j, z+k);
+                samples[vertexID] = sdf[x + i][y + j][z + k];
+                vertexID++;
+            }
+        }
+    }
+
+    // Index into edge table to get an 8-bit number where each bit corresponds to a vertex
+    // The edge table has 12-bit numbers where each bit corresponds to an edge
     int cube_index = 0;
-
-    glm::vec3 vertices[12] = {glm::vec3(0.0f)};
-//    glm::vec3 normals[12] = {glm::vec3(0.0f)};
-
-    // Index into edge table (8-bit number)
-    if(cell.samples[0] < isovalue)
+    if(samples[0] < isovalue)
         cube_index |= 1;
-    if(cell.samples[1] < isovalue)
+    if(samples[4] < isovalue)
         cube_index |= 2;
-    if(cell.samples[2] < isovalue)
+    if(samples[5] < isovalue)
         cube_index |= 4;
-    if(cell.samples[3] < isovalue)
+    if(samples[1] < isovalue)
         cube_index |= 8;
-    if(cell.samples[4] < isovalue)
+    if(samples[2] < isovalue)
         cube_index |= 16;
-    if(cell.samples[5] < isovalue)
+    if(samples[6] < isovalue)
         cube_index |= 32;
-    if(cell.samples[6] < isovalue)
+    if(samples[7] < isovalue)
         cube_index |= 64;
-    if(cell.samples[7] < isovalue)
+    if(samples[3] < isovalue)
         cube_index |= 128;
 
+    // Count the number of triangles that will be generated in this cube
+    int num_tris = 0;
+    for(int i=0; triTable[cube_index][i] != -1; i+=3)
+        num_tris++;
 
-    // If cube is fully outside or inside surface, skip
-    if(edgeTable[cube_index] == 0)
-        return {};
+    glm::vec3* triangle_points = new glm::vec3[num_tris*3];
+    glm::vec3* triangle_normals = new glm::vec3[num_tris*3];
 
+    // If cube fully inside or outside surface, return empty cube (no triangles insides)
+    if(edgeTable[cube_index] == 0){
+        Cube* c = new Cube(cube_start, triangle_points, triangle_normals, num_tris);
+        for(int i=0; i < 8; i++){
+            c->vertices[i] = vertices[i];
+            c->samples[i] = samples[i];
+        }
 
-    // Vertices where surface intersects cube
+        return c;
+    }
+
+    // Vertices where cube intersects the surface.
+    // If edge is intersecting surface, linearly interpolate new vertices and their normals
+    glm::vec3 t_v[12];
+
     if(edgeTable[cube_index] & 1){
-        vertices[0] = vertex_lerp(cell.vertices[0], cell.vertices[1], cell.samples[0], cell.samples[1], isovalue);
-//        normals[0] = vertex_lerp(cell.normals[0], cell.normals[1], cell.samples[0], cell.samples[1], isovalue);
+        t_v[0] = vertex_lerp(vertices[0], vertices[4], samples[0], samples[4], isovalue);
     }
-
     if(edgeTable[cube_index] & 2){
-        vertices[1] = vertex_lerp(cell.vertices[1], cell.vertices[2], cell.samples[1], cell.samples[2], isovalue);
-//        normals[1] = vertex_lerp(cell.normals[1], cell.normals[2], cell.samples[1], cell.samples[2], isovalue);
-
+        t_v[1] = vertex_lerp(vertices[4], vertices[5], samples[4], samples[5], isovalue);
     }
-
     if(edgeTable[cube_index] & 4){
-        vertices[2] = vertex_lerp(cell.vertices[2], cell.vertices[3], cell.samples[2], cell.samples[3], isovalue);
-//        normals[2] = vertex_lerp(cell.normals[2], cell.normals[3], cell.samples[2], cell.samples[3], isovalue);
-
+        t_v[2] = vertex_lerp(vertices[5], vertices[1], samples[5], samples[1], isovalue);
     }
-
     if(edgeTable[cube_index] & 8){
-        vertices[3] = vertex_lerp(cell.vertices[3], cell.vertices[0], cell.samples[3], cell.samples[0], isovalue);
-//        normals[3] = vertex_lerp(cell.normals[3], cell.normals[0], cell.samples[3], cell.samples[0], isovalue);
-
+        t_v[3] = vertex_lerp(vertices[1], vertices[0], samples[1], samples[0], isovalue);
     }
-
     if(edgeTable[cube_index] & 16){
-        vertices[4] = vertex_lerp(cell.vertices[4], cell.vertices[5], cell.samples[4], cell.samples[5], isovalue);
-//        normals[4] = vertex_lerp(cell.normals[4], cell.normals[5], cell.samples[4], cell.samples[5], isovalue);
-
+        t_v[4] = vertex_lerp(vertices[2], vertices[6], samples[2], samples[6], isovalue);
     }
-
     if(edgeTable[cube_index] & 32){
-        vertices[5] = vertex_lerp(cell.vertices[5], cell.vertices[6], cell.samples[5], cell.samples[6], isovalue);
-//        normals[5] = vertex_lerp(cell.normals[5], cell.normals[6], cell.samples[5], cell.samples[6], isovalue);
-
+        t_v[5] = vertex_lerp(vertices[6], vertices[7], samples[6], samples[7], isovalue);
     }
-
     if(edgeTable[cube_index] & 64){
-        vertices[6] = vertex_lerp(cell.vertices[6], cell.vertices[7], cell.samples[6], cell.samples[7], isovalue);
-//        normals[6] = vertex_lerp(cell.normals[6], cell.normals[7], cell.samples[6], cell.samples[7], isovalue);
-
+        t_v[6] = vertex_lerp(vertices[7], vertices[3], samples[7], samples[3], isovalue);
     }
-
     if(edgeTable[cube_index] & 128){
-        vertices[7] = vertex_lerp(cell.vertices[7], cell.vertices[4], cell.samples[7], cell.samples[4], isovalue);
-//        normals[7] = vertex_lerp(cell.normals[7], cell.normals[4], cell.samples[7], cell.samples[4], isovalue);
-
+        t_v[7] = vertex_lerp(vertices[3], vertices[2], samples[3], samples[2], isovalue);
     }
-
     if(edgeTable[cube_index] & 256){
-        vertices[8] = vertex_lerp(cell.vertices[0], cell.vertices[4], cell.samples[0], cell.samples[4], isovalue);
-//        normals[8] = vertex_lerp(cell.normals[0], cell.normals[4], cell.samples[0], cell.samples[4], isovalue);
-
+        t_v[8] = vertex_lerp(vertices[0], vertices[2], samples[0], samples[2], isovalue);
     }
-
     if(edgeTable[cube_index] & 512){
-        vertices[9] = vertex_lerp(cell.vertices[1], cell.vertices[5], cell.samples[1], cell.samples[5], isovalue);
-//        normals[9] = vertex_lerp(cell.normals[1], cell.normals[5], cell.samples[1], cell.samples[5], isovalue);
-
+        t_v[9] = vertex_lerp(vertices[4], vertices[6], samples[4], samples[6], isovalue);
     }
-
     if(edgeTable[cube_index] & 1024){
-        vertices[10] = vertex_lerp(cell.vertices[2], cell.vertices[6], cell.samples[2], cell.samples[6], isovalue);
-//        normals[10] = vertex_lerp(cell.normals[2], cell.normals[6], cell.samples[2], cell.samples[6], isovalue);
-
+        t_v[10] = vertex_lerp(vertices[5], vertices[7], samples[5], samples[7], isovalue);
     }
-
     if(edgeTable[cube_index] & 2048){
-        vertices[11] = vertex_lerp(cell.vertices[3], cell.vertices[7], cell.samples[3], cell.samples[7], isovalue);
-//        normals[11] = vertex_lerp(cell.normals[3], cell.normals[7], cell.samples[3], cell.samples[7], isovalue);
-
+        t_v[11] = vertex_lerp(vertices[1], vertices[3], samples[1], samples[3], isovalue);
     }
 
 
-    std::vector<Triangle> triangles;
-    for(int i=0; triTable[cube_index][i] != -1; i+=3){
-        Triangle t{};
-        t.v0 = vertices[triTable[cube_index][i]];
-        t.v1 = vertices[triTable[cube_index][i+1]];
-        t.v2 = vertices[triTable[cube_index][i+2]];
+    // Build the triangles from the triangle table (getting vertices of each triangle)
+    // Triangle point list will be linear where each 3 elements represent vertices of 1 triangle
+    // ie v0 v1 v2 v3 v4 v5 ...
+    //      tri1    tri2
+    // Normal list mirrors the triangle point list
+    for(int i=0; triTable[cube_index][i] != -1; i += 3){
+        triangle_points[i] = t_v[triTable[cube_index][i]];
+        triangle_points[i + 1] = t_v[triTable[cube_index][i + 1]];
+        triangle_points[i + 2] = t_v[triTable[cube_index][i + 2]];
 
-//        t.n0 = normals[triTable[cube_index][i]];
-//        t.n1 = normals[triTable[cube_index][i+1]];
-//        t.n2 = normals[triTable[cube_index][i+2]];
-
-        triangles.push_back(t);
+        // Calculate face normal (without gradients)
+//        glm::vec3 normal = calc_normal(triangle_points[i], triangle_points[i+1], triangle_points[i+2]);
+        glm::vec3 normal = glm::cross(triangle_points[i+1]-triangle_points[i], triangle_points[i+2]-triangle_points[i]);
+        triangle_normals[i] = normal;
+        triangle_normals[i+1] = normal;
+        triangle_normals[i+2] = normal;
     }
 
-    return triangles;
-
+    Cube* c = new Cube(cube_start, triangle_points, triangle_normals, num_tris);
+    for(int i=0; i < 8; i++){
+        c->vertices[i] = vertices[i];
+        c->samples[i] = samples[i];
+    }
+    return c;
 }
 
 
+
+
+/*
+ * Routine to generate a marching cubes grid, sample the points and march each cell
+ */
+Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, double (*func)(glm::vec3), double isovalue){
+
+
+    double ***densities = new double**[res+1];
+    for (int i = 0; i < res+1; i++) {
+        densities[i] = new double*[res+1];
+        for (int j = 0; j < res+1; j++) {
+            densities[i][j] = new double[res+1];
+        }
+    }
+
+    // Calculate samples at each point in space
+    glm::vec3 p;
+
+    for(int x =0; x < res+1; x++){
+        for(int y=0; y<res+1; y++){
+            for(int z=0; z<res+1; z++){
+                p = (glm::vec3(x,y,z) + grid_start) * grid_size;
+                densities[x][y][z] = func(p);
+            }
+        }
+    }
+
+    Cube** cubes = new Cube*[res*res*res];
+
+    // March each cube
+    float cube_length = grid_size /2;
+    for(int x =0; x < res; x++){
+        for(int y =0; y < res; y++){
+            for(int z =0; z < res; z++){
+                int idx = res*res*x + res*y + z;
+                glm::vec3 cube_start = glm::vec3(x,y,z) + grid_start;
+                cubes[idx] = march(cube_start, cube_length, densities, isovalue);
+            }
+        }
+    }
+
+
+    return cubes;
+}
 
 
 

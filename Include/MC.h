@@ -12,11 +12,19 @@
  * A single marching cube cell
  * Contains vertices of the cube & sampled values at the vertices
  */
-struct Cube{
+class Cube{
+
+public:
+    Cube(glm::vec3 start, glm::vec3* tris, glm::vec3* normals, int num_tris);
+    Cube();
+
+    int num_tris;
+    glm::vec3* tris;
+    glm::vec3* normals;
+    glm::vec3 v_start; // starting vertex / cube corner
+
     glm::vec3 vertices[8];
     double samples[8];
-    glm::vec3 normals[8];
-
 };
 
 
@@ -25,19 +33,6 @@ struct Triangle{
     glm::vec3 n0, n1, n2;
 };
 
-static const glm::vec3 baseVertices[8] =
-        {
-        glm::vec3(0.0f, 0.0f, 0.0f),    // v0
-        glm::vec3 (1.0f, 0.0f, 0.0f),   // v1
-        glm::vec3(1.0f, 1.0f, 0.0f),    // v2
-        glm::vec3(0.0f, 1.0f, 0.0f),    // v3
-
-        glm::vec3(0.0f, 0.0f, 1.0f),    // v4
-        glm::vec3 (1.0f, 0.0f, 1.0f),   // v5
-        glm::vec3(1.0f, 1.0f, 1.0f),    // v6
-        glm::vec3(0.0f, 1.0f, 1.0f)     // v7
-
-        };
 
 static const std::uint32_t edges[12][2] =
         {
@@ -46,8 +41,6 @@ static const std::uint32_t edges[12][2] =
         {0,4}, {1,5}, {2,6}, {3,7}
         };
 
-std::vector<Cube> generate_samples(int grid_size, double (*func)(glm::vec3));
-std::vector<Cube> generate_samples3(int grid_size, std::uint8_t*** buffer);
 
 
 Cube generate_debug_sample();
@@ -60,11 +53,12 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
 
 glm::vec3 calc_normal(const Triangle& t);
 
-std::vector<Triangle> march(Cube cell, double isovalue);
+Cube* march(glm::vec3 cube_start, float cube_length, double*** sdf, double isovalue);
+Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, double (*func)(glm::vec3), double isovalue);
 
 
 
-static const int edgeTable[256]={
+const static int edgeTable[256]={
         0x0  , 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
         0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
         0x190, 0x99 , 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -99,8 +93,7 @@ static const int edgeTable[256]={
         0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0   };
 
 
-
-static const int triTable[256][16] =
+const static int triTable[256][16] =
         {{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
@@ -357,6 +350,5 @@ static const int triTable[256][16] =
          {0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
          {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
-
 
 #endif
