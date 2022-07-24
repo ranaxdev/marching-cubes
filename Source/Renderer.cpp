@@ -310,6 +310,7 @@ void Renderer::renderTris(GLuint buffer) {
 void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuint grid_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer) {
     g.update();
 
+    // Isovalue has been edited, regenerate mesh and update buffers
     if(g.isoChanging)
     {
         for(int i=0; i < num_cells; i++){
@@ -322,7 +323,11 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
         update_points_buffer(points_buffer, g.iso);
         update_grid_buffer(grid_buffer, g.iso);
         update_tri_buffer(tri_buffer, g.iso);
+    }
 
+    // Triangle output file requested
+    if(g.output_file_btn){
+        output_triangles(cells, num_cells, std::string(SRC+"triangles.txt").c_str());
     }
 
     // Regenerate with different functions

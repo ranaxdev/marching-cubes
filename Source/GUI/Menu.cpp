@@ -56,7 +56,8 @@ void Menu::update() {
     debug_clicked[7] = ImGui::Checkbox("V7", debug_vertices[7]);
 
     ImGui::NewLine();
-    isoChanging = ImGui::Button("Regenerate");
+    isoChanging = ImGui::Button("Regenerate"); ImGui::SameLine();
+    output_file_btn = ImGui::Button("Output Tris");
 
 
     ImGui::End();

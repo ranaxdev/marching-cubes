@@ -14,6 +14,7 @@ public:
     int model = 0;
     bool sphere_btn = false;
     bool bumps_btn = false;
+    bool output_file_btn = false;
 
 
     bool isoChanging = false;
