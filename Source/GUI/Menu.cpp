@@ -41,7 +41,7 @@ void Menu::update() {
         model = 1;
     }
 
-    isoChanging = ImGui::SliderFloat("Isovalue", &iso, -5.0f, 5.0f);
+    isoChanging = ImGui::SliderFloat("Isovalue", &iso, 0.0f, 200.0f);
 
     ImGui::NewLine();
     // Debug vertices

@@ -285,7 +285,7 @@ void Renderer::renderLines(GLuint buffer) {
 void Renderer::renderTris(GLuint buffer) {
 
     glm::mat4 trans = glm::mat4(1.0f);
-//    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
+    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
 
     shader_phong.bind();
@@ -317,7 +317,7 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
         }
         delete[] cells;
 
-        cells = generate_samples(glm::vec3(0.0f), 10, 1.0, sample_sphere, g.iso);
+        cells = generate_samples(glm::vec3(0.0f), 63, 1.0, mc_buffer, g.iso);
 
         update_points_buffer(points_buffer, g.iso);
         update_grid_buffer(grid_buffer, g.iso);
@@ -472,9 +472,10 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
 
 
 
-void Renderer::setCells(Cube** c, int num_cell) {
+void Renderer::setCells(Cube** c, std::uint8_t*** buffer, int num_cell) {
 
     cells = c;
+    mc_buffer = buffer;
     num_cells = num_cell;
 }
 

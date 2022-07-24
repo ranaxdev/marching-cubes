@@ -40,7 +40,7 @@ public:
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
-    void setCells(Cube** cells, int num_cells);
+    void setCells(Cube** c, std::uint8_t*** buffer, int num_cell);
 
 
     // Debugging cell
@@ -63,6 +63,7 @@ private:
 
     // Marching cubes data
     Cube** cells;
+    std::uint8_t*** mc_buffer;
     int num_cells;
     Cube debug_cell;
     bool debug = false;

@@ -100,8 +100,8 @@ public:
 //        samples = generate_samples2(64, buffer);
 //        samples = generate_samples3(64, buffer);
 
-        cells = generate_samples(glm::vec3(0.0f), 10, 1.0, sample_sphere, 0.010);
-        R->setCells(cells, 10*10*10);
+        cells = generate_samples(glm::vec3(0.0f), 63, 1.0, buffer, 0.010);
+        R->setCells(cells, buffer, 63*63*63);
 
         axis_buffer = R->enableAxis();
         points_buffer = R->create_point_buffer();
@@ -122,8 +122,8 @@ public:
         R->renderAxis(axis_buffer);
 
         // Main sample
-        R->renderPoints(points_buffer);
-        R->renderLines(lines_buffer);
+//        R->renderPoints(points_buffer);
+//        R->renderLines(lines_buffer);
         R->renderTris(tri_buffer);
 
         // Debug sample

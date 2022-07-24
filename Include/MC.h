@@ -53,8 +53,8 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
 
 glm::vec3 calc_normal(const Triangle& t);
 
-Cube* march(glm::vec3 cube_start, float cube_length, double*** sdf, double isovalue);
-Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, double (*func)(glm::vec3), double isovalue);
+Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue);
+Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uint8_t*** sdf, double isovalue);
 
 
 
