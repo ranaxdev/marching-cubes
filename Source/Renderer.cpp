@@ -322,6 +322,7 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
         update_points_buffer(points_buffer, g.iso);
         update_grid_buffer(grid_buffer, g.iso);
         update_tri_buffer(tri_buffer, g.iso);
+
     }
 
     // Regenerate with different functions

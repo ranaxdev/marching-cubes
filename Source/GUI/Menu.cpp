@@ -41,7 +41,8 @@ void Menu::update() {
         model = 1;
     }
 
-    isoChanging = ImGui::SliderFloat("Isovalue", &iso, 0.0f, 200.0f);
+//    isoChanging = ImGui::SliderFloat("Isovalue", &iso, 0.0f, 200.0f);
+    ImGui::InputFloat("Isolevel", &iso, 5.0f, 10.0f);
 
     ImGui::NewLine();
     // Debug vertices
@@ -54,6 +55,8 @@ void Menu::update() {
     debug_clicked[6] = ImGui::Checkbox("V6", debug_vertices[6]);
     debug_clicked[7] = ImGui::Checkbox("V7", debug_vertices[7]);
 
+    ImGui::NewLine();
+    isoChanging = ImGui::Button("Regenerate");
 
 
     ImGui::End();

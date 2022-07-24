@@ -12,7 +12,7 @@ void main(void){
 
     vec3 lightcol = vec3(1.0f, 1.0f, 1.0f);
     vec3 objectcol = vec3(vcolor.xyz);
-    vec3 lightpos = vec3(0.0f, 5.0f, -5.0f);
+    vec3 lightpos = vec3(3.0f, 5.0f, 0.0f);
 
     float ambient_s = 0.1;
     vec3 ambient = ambient_s * lightcol;
@@ -22,7 +22,7 @@ void main(void){
     float diff = max(dot(norm, lightdir), 0.0);
     vec3 diffuse = diff * lightcol;
 
-    float spec_s = 0.5;
+    float spec_s = 1.5;
     vec3 viewDir = normalize(viewpos - vfragpos);
     vec3 reflectDir = reflect(-lightdir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
