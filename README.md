@@ -4,6 +4,7 @@
 
 - Major cleanup, standardize loading in models
 - grid size stuff
+- 2 debug cells side by side to show no ambiguities
 
 ## Writing
 - Write about optimization (grid only bands near isosurface)
