@@ -38,6 +38,7 @@ public:
     GLuint tri_buffer;
 
     // debug buffers
+    Cube* debug_cell;
     GLuint debug_grid_buffer;
     GLuint debug_points_buffer;
     GLuint debug_tri_buffer;
@@ -89,11 +90,11 @@ public:
 
 
         // Cell debugging sample
-//        R->enableDebug();
-//        R->setDebugCell(generate_debug_sample());
-//        debug_points_buffer = R->create_debug_point_buffer();
-//        debug_grid_buffer = R->create_debug_grid_buffer();
-//        debug_tri_buffer = R->create_debug_tri_buffer();
+        R->enableDebug();
+        R->setDebugCell(generate_debug_sample());
+        debug_points_buffer = R->create_debug_point_buffer();
+        debug_grid_buffer = R->create_debug_grid_buffer();
+        debug_tri_buffer = R->create_debug_tri_buffer();
 
 
         // Main sample
@@ -127,9 +128,9 @@ public:
         R->renderTris(tri_buffer);
 
         // Debug sample
-//        R->renderPoints(debug_points_buffer);
-//        R->renderLines(debug_grid_buffer);
-//        R->renderTris(debug_tri_buffer);
+        R->renderPoints(debug_points_buffer);
+        R->renderLines(debug_grid_buffer);
+        R->renderTris(debug_tri_buffer, true);
     }
 };
 

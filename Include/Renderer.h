@@ -32,7 +32,7 @@ public:
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
-    void renderTris(GLuint buffer);
+    void renderTris(GLuint buffer, bool debug_tris=false);
 
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
@@ -45,7 +45,7 @@ public:
 
 
     // Debugging cell
-    void setDebugCell(Cube cell);
+    void setDebugCell(Cube* cell);
     void enableDebug();
     GLuint create_debug_point_buffer();
     GLuint create_debug_grid_buffer();
@@ -66,7 +66,8 @@ private:
     Cube** cells;
     std::uint8_t*** mc_buffer;
     int num_cells;
-    Cube debug_cell;
+
+    Cube* debug_cell;
     bool debug = false;
 
     // Shaders

@@ -43,17 +43,18 @@ static const std::uint32_t edges[12][2] =
 
 
 
-Cube generate_debug_sample();
+Cube* generate_debug_sample();
 
 double sample_sphere(glm::vec3 position);
 double sample_bumps(glm::vec3 position);
 double sample_surf(glm::vec3 position);
 
 glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sample2, double isovalue);
-
+void make_cube_index(int& cube_index, double* samples, double isovalue);
 glm::vec3 calc_normal(const Triangle& t);
 
 Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue);
+void march_debug_cell(Cube* cell);
 Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uint8_t*** sdf, double isovalue);
 
 

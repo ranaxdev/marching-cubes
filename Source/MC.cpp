@@ -64,8 +64,28 @@ glm::vec3 calc_normal(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2){
 }
 
 
+/*
+ * Creates cube indexer from samples
+ */
+void make_cube_index(int& cube_index, double* samples, double isovalue){
 
-
+    if(samples[0] < isovalue)
+        cube_index |= 1;
+    if(samples[4] < isovalue)
+        cube_index |= 2;
+    if(samples[5] < isovalue)
+        cube_index |= 4;
+    if(samples[1] < isovalue)
+        cube_index |= 8;
+    if(samples[2] < isovalue)
+        cube_index |= 16;
+    if(samples[6] < isovalue)
+        cube_index |= 32;
+    if(samples[7] < isovalue)
+        cube_index |= 64;
+    if(samples[3] < isovalue)
+        cube_index |= 128;
+}
 
 
 /*
@@ -100,22 +120,7 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
     // Index into edge table to get an 8-bit number where each bit corresponds to a vertex
     // The edge table has 12-bit numbers where each bit corresponds to an edge
     int cube_index = 0;
-    if(samples[0] < isovalue)
-        cube_index |= 1;
-    if(samples[4] < isovalue)
-        cube_index |= 2;
-    if(samples[5] < isovalue)
-        cube_index |= 4;
-    if(samples[1] < isovalue)
-        cube_index |= 8;
-    if(samples[2] < isovalue)
-        cube_index |= 16;
-    if(samples[6] < isovalue)
-        cube_index |= 32;
-    if(samples[7] < isovalue)
-        cube_index |= 64;
-    if(samples[3] < isovalue)
-        cube_index |= 128;
+    make_cube_index(cube_index, samples, isovalue);
 
     // Count the number of triangles that will be generated in this cube
     int num_tris = 0;
@@ -292,3 +297,138 @@ Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uin
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * This routine generates a single cell for debug purposes
+ * Its purpose is to test the different triangulation cases
+ */
+Cube* generate_debug_sample(){
+    glm::vec3 pos = glm::vec3(15.0f, 0.0f, 0.0f);
+
+    // Get the vertices, samples and gradients at the cube
+    glm::vec3 vertices[8];
+    double samples[8];
+
+    vertices[0] = pos;
+    vertices[1] = pos + glm::vec3(1.0f, 0.0f, 0.0f);
+    vertices[2] = pos + glm::vec3(1.0f, 1.0f, 0.0f);
+    vertices[3] = pos + glm::vec3(0.0f, 1.0f, 0.0f);
+    vertices[4] = pos + glm::vec3(0.0f, 0.0f, 1.0f);
+    vertices[5] = pos + glm::vec3(1.0f, 0.0f ,1.0f);
+    vertices[6] = pos + glm::vec3(1.0f ,1.0f ,1.0f);
+    vertices[7] = pos + glm::vec3(0.0f, 1.0f ,1.0f);
+
+    for(int i=0; i< 8; i++)
+        samples[i] = 11;
+
+    Cube* cell = new Cube(pos, nullptr, nullptr, 0);
+    for(int i=0; i < 8; i++){
+        cell->vertices[i] = vertices[i];
+        cell->samples[i] = samples[i];
+    }
+
+
+    march_debug_cell(cell);
+
+    return cell;
+
+}
+
+
+void march_debug_cell(Cube* cell){
+
+    // Clean-up previous data if it has
+    if(cell->tris != nullptr){
+        delete[] cell->tris;
+        delete[] cell->normals;
+
+        cell->tris = nullptr;
+        cell->normals = nullptr;
+        cell->num_tris = 0;
+    }
+
+
+    int cube_index = 0;
+    if(cell->samples[0] < 10)
+        cube_index |= 1;
+    if(cell->samples[1] < 10)
+        cube_index |= 2;
+    if(cell->samples[2] < 10)
+        cube_index |= 4;
+    if(cell->samples[3] < 10)
+        cube_index |= 8;
+    if(cell->samples[4] < 10)
+        cube_index |= 16;
+    if(cell->samples[5] < 10)
+        cube_index |= 32;
+    if(cell->samples[6] < 10)
+        cube_index |= 64;
+    if(cell->samples[7] < 10)
+        cube_index |= 128;
+
+
+    int num_tris = 0;
+    for(int i=0; triTable[cube_index][i] != -1; i+=3)
+        num_tris++;
+
+    cell->num_tris = num_tris;
+    cell->tris = new glm::vec3[num_tris*3];
+    cell->normals = new glm::vec3[num_tris*3];
+
+    if(edgeTable[cube_index] == 0){
+        return;
+    }
+
+    glm::vec3 t_v[12]; // triangle vertices
+    double isovalue = 10.0;
+    if(edgeTable[cube_index] & 1)
+        t_v[0] = vertex_lerp(cell->vertices[0], cell->vertices[1], cell->samples[0], cell->samples[1], isovalue);
+    if(edgeTable[cube_index] & 2)
+        t_v[1] = vertex_lerp(cell->vertices[1], cell->vertices[2], cell->samples[1], cell->samples[2], isovalue);
+    if(edgeTable[cube_index] & 4)
+        t_v[2] = vertex_lerp(cell->vertices[2], cell->vertices[3], cell->samples[2], cell->samples[3], isovalue);
+    if(edgeTable[cube_index] & 8)
+        t_v[3] = vertex_lerp(cell->vertices[3], cell->vertices[0], cell->samples[3], cell->samples[0], isovalue);
+    if(edgeTable[cube_index] & 16)
+        t_v[4] = vertex_lerp(cell->vertices[4], cell->vertices[5], cell->samples[4], cell->samples[5], isovalue);
+    if(edgeTable[cube_index] & 32)
+        t_v[5] = vertex_lerp(cell->vertices[5], cell->vertices[6], cell->samples[5], cell->samples[6], isovalue);
+    if(edgeTable[cube_index] & 64)
+        t_v[6] = vertex_lerp(cell->vertices[6], cell->vertices[7], cell->samples[6], cell->samples[7], isovalue);
+    if(edgeTable[cube_index] & 128)
+        t_v[7] = vertex_lerp(cell->vertices[7], cell->vertices[4], cell->samples[7], cell->samples[4], isovalue);
+    if(edgeTable[cube_index] & 256)
+        t_v[8] = vertex_lerp(cell->vertices[0], cell->vertices[4], cell->samples[0], cell->samples[4], isovalue);
+    if(edgeTable[cube_index] & 512)
+        t_v[9] = vertex_lerp(cell->vertices[1], cell->vertices[5], cell->samples[1], cell->samples[5], isovalue);
+    if(edgeTable[cube_index] & 1024)
+        t_v[10] = vertex_lerp(cell->vertices[2], cell->vertices[6], cell->samples[2], cell->samples[6], isovalue);
+    if(edgeTable[cube_index] & 2048)
+        t_v[11] = vertex_lerp(cell->vertices[3], cell->vertices[7], cell->samples[3], cell->samples[7], isovalue);
+
+    for(int i=0; triTable[cube_index][i] != -1; i += 3){
+        cell->tris[i] = t_v[triTable[cube_index][i]];
+        cell->tris[i + 1] = t_v[triTable[cube_index][i + 1]];
+        cell->tris[i + 2] = t_v[triTable[cube_index][i + 2]];
+    }
+}

@@ -282,18 +282,25 @@ void Renderer::renderLines(GLuint buffer) {
 }
 
 
-void Renderer::renderTris(GLuint buffer) {
+void Renderer::renderTris(GLuint buffer, bool debug_tris) {
 
-    glm::mat4 trans = glm::mat4(1.0f);
-    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
-
-
-    shader_phong.bind();
-    shader_phong.setMat4(20, qaiser::Harness::VP);
-    shader_phong.setMat4(21, trans);
-    shader_phong.setVec3(22, qaiser::Harness::campos);
+    if(!debug_tris){
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
 
+        shader_phong.bind();
+        shader_phong.setMat4(20, qaiser::Harness::VP);
+        shader_phong.setMat4(21, trans);
+        shader_phong.setVec3(22, qaiser::Harness::campos);
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // regular
+    }
+    else{ // debug tris
+        shader_axis.bind();
+        shader_axis.setMat4(20, qaiser::Harness::VP);
+        shader_axis.setVec3(22, qaiser::Harness::campos);
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); // wireframe
+    }
 
 
     glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
@@ -344,19 +351,21 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
 //        update_tri_buffer(tri_buffer, g.iso);
 //    }
 //
-//    // Debug vertices controller
-//    for(int i=0; i < 8; i++){
-//        if(g.debug_clicked[i])
-//        {
-//            if(*g.debug_vertices[i])
-//                debug_cell.samples[i] = 9;
-//            else
-//                debug_cell.samples[i] = 11;
-//
-//            update_debug_points(debug_points_buffer);
-//            update_debug_tris(debug_tri_buffer);
-//        }
-//    }
+    // Debug vertices controller
+    for(int i=0; i < 8; i++){
+        if(g.debug_clicked[i])
+        {
+            if(*g.debug_vertices[i])
+                debug_cell->samples[i] = 9;
+            else
+                debug_cell->samples[i] = 11;
+
+            march_debug_cell(debug_cell);
+
+            update_debug_points(debug_points_buffer);
+            update_debug_tris(debug_tri_buffer);
+        }
+    }
 }
 
 
@@ -500,8 +509,8 @@ void Renderer::setCells(Cube** c, std::uint8_t*** buffer, int num_cell) {
 /*
  * DEBUGGING METHODS
  */
-/*
-void Renderer::setDebugCell(Cube cell) {
+
+void Renderer::setDebugCell(Cube* cell) {
     this->debug_cell = cell;
 }
 
@@ -512,12 +521,12 @@ void Renderer::enableDebug() {
 GLuint Renderer::create_debug_point_buffer() {
     std::vector<GLfloat> data;
     for(int i=0; i < 8; i++){
-        data.push_back(debug_cell.vertices[i].x);
-        data.push_back(debug_cell.vertices[i].y);
-        data.push_back(debug_cell.vertices[i].z);
+        data.push_back(debug_cell->vertices[i].x);
+        data.push_back(debug_cell->vertices[i].y);
+        data.push_back(debug_cell->vertices[i].z);
 
         glm::vec3 color;
-        if(debug_cell.samples[i] > 10)
+        if(debug_cell->samples[i] > 10)
             color = glm::vec3(0.0f);
         else
             color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -541,12 +550,12 @@ GLuint Renderer::create_debug_point_buffer() {
 void Renderer::update_debug_points(GLuint buffer) {
     std::vector<GLfloat> data;
     for(int i=0; i < 8; i++){
-        data.push_back(debug_cell.vertices[i].x);
-        data.push_back(debug_cell.vertices[i].y);
-        data.push_back(debug_cell.vertices[i].z);
+        data.push_back(debug_cell-> vertices[i].x);
+        data.push_back(debug_cell->vertices[i].y);
+        data.push_back(debug_cell->vertices[i].z);
 
         glm::vec3 color;
-        if(debug_cell.samples[i] > 10)
+        if(debug_cell->samples[i] > 10)
             color = glm::vec3(0.0f);
         else
             color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -568,16 +577,16 @@ void Renderer::update_debug_points(GLuint buffer) {
 GLuint Renderer::create_debug_grid_buffer() {
     std::vector<GLfloat> data;
     for(int e = 0; e < 12; e++){
-        data.push_back(debug_cell.vertices[edges[e][0]].x); // first vertex of edge
-        data.push_back(debug_cell.vertices[edges[e][0]].y);
-        data.push_back(debug_cell.vertices[edges[e][0]].z);
+        data.push_back(debug_cell->vertices[edges[e][0]].x); // first vertex of edge
+        data.push_back(debug_cell->vertices[edges[e][0]].y);
+        data.push_back(debug_cell->vertices[edges[e][0]].z);
 
         data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
 
-        data.push_back(debug_cell.vertices[edges[e][1]].x); // second vertex of edge
-        data.push_back(debug_cell.vertices[edges[e][1]].y);
-        data.push_back(debug_cell.vertices[edges[e][1]].z);
+        data.push_back(debug_cell->vertices[edges[e][1]].x); // second vertex of edge
+        data.push_back(debug_cell->vertices[edges[e][1]].y);
+        data.push_back(debug_cell->vertices[edges[e][1]].z);
 
         data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
@@ -596,16 +605,18 @@ GLuint Renderer::create_debug_grid_buffer() {
 GLuint Renderer::create_debug_tri_buffer() {
     std::vector<GLfloat> data;
 
-    std::vector<Triangle> tris = march(debug_cell, 10);
-
-    for(auto& t: tris){
-        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+    for(int t=0; t < debug_cell->num_tris*3; t+=3){
+        // push vertices -> colors
+        // V0
+        data.push_back(debug_cell->tris[t].x); data.push_back(debug_cell->tris[t].y); data.push_back(debug_cell->tris[t].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
-        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        // V1
+        data.push_back(debug_cell->tris[t+1].x); data.push_back(debug_cell->tris[t+1].y); data.push_back(debug_cell->tris[t+1].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
-        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        // V2
+        data.push_back(debug_cell->tris[t+2].x); data.push_back(debug_cell->tris[t+2].y); data.push_back(debug_cell->tris[t+2].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
@@ -624,26 +635,28 @@ GLuint Renderer::create_debug_tri_buffer() {
 void Renderer::update_debug_tris(GLuint buffer) {
     std::vector<GLfloat> data;
 
-    std::vector<Triangle> tris = march(debug_cell, 10);
-
-    for(auto& t: tris){
-        data.push_back(t.v0.x); data.push_back(t.v0.y); data.push_back(t.v0.z);
+    for(int t=0; t < debug_cell->num_tris*3; t+=3){
+        // push vertices -> colors
+        // V0
+        data.push_back(debug_cell->tris[t].x); data.push_back(debug_cell->tris[t].y); data.push_back(debug_cell->tris[t].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
-        data.push_back(t.v1.x); data.push_back(t.v1.y); data.push_back(t.v1.z);
+        // V1
+        data.push_back(debug_cell->tris[t+1].x); data.push_back(debug_cell->tris[t+1].y); data.push_back(debug_cell->tris[t+1].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
-        data.push_back(t.v2.x); data.push_back(t.v2.y); data.push_back(t.v2.z);
+        // V2
+        data.push_back(debug_cell->tris[t+2].x); data.push_back(debug_cell->tris[t+2].y); data.push_back(debug_cell->tris[t+2].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
+
 
     editBuf(data, buffer);
 
     sizes[buffer] = data.size();
 }
 
-*/
 
 
 
