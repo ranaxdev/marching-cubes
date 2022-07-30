@@ -322,8 +322,7 @@ Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uin
  * This routine generates a single cell for debug purposes
  * Its purpose is to test the different triangulation cases
  */
-Cube* generate_debug_sample(){
-    glm::vec3 pos = glm::vec3(15.0f, 0.0f, 0.0f);
+Cube* generate_debug_sample(glm::vec3 pos){
 
     // Get the vertices, samples and gradients at the cube
     glm::vec3 vertices[8];

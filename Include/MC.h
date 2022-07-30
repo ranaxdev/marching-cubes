@@ -43,7 +43,7 @@ static const std::uint32_t edges[12][2] =
 
 
 
-Cube* generate_debug_sample();
+Cube* generate_debug_sample(glm::vec3 pos);
 
 double sample_sphere(glm::vec3 position);
 double sample_bumps(glm::vec3 position);

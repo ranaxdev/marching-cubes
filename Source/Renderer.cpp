@@ -314,7 +314,10 @@ void Renderer::renderTris(GLuint buffer, bool debug_tris) {
  * Buffer adaption (later):
  *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
  */
-void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuint grid_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer) {
+void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
+                         GLuint grid_buffer, GLuint debug_points_buffer,
+                         GLuint debug_tri_buffer, GLuint debug_points_buffer2,
+                         GLuint debug_tri_buffer2) {
     g.update();
 
     // Isovalue has been edited, regenerate mesh and update buffers
@@ -362,9 +365,25 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer, GLuin
 
             march_debug_cell(debug_cell);
 
-            update_debug_points(debug_points_buffer);
-            update_debug_tris(debug_tri_buffer);
+            update_debug_points(debug_points_buffer, debug_cell);
+            update_debug_tris(debug_tri_buffer, debug_cell);
         }
+
+        if(g.debug_clicked2[i])
+        {
+            std::cout << "Clicked" << std::endl;
+
+            if(*g.debug_vertices2[i])
+                debug_cell2->samples[i] = 9;
+            else
+                debug_cell2->samples[i] = 11;
+
+            march_debug_cell(debug_cell2);
+
+            update_debug_points(debug_points_buffer2, debug_cell2);
+            update_debug_tris(debug_tri_buffer2, debug_cell2);
+        }
+
     }
 }
 
@@ -513,20 +532,23 @@ void Renderer::setCells(Cube** c, std::uint8_t*** buffer, int num_cell) {
 void Renderer::setDebugCell(Cube* cell) {
     this->debug_cell = cell;
 }
+void Renderer::setDebugCell2(Cube *cell) {
+    this->debug_cell2 = cell;
+}
 
 void Renderer::enableDebug() {
     this->debug = true;
 }
 
-GLuint Renderer::create_debug_point_buffer() {
+GLuint Renderer::create_debug_point_buffer(Cube* cell) {
     std::vector<GLfloat> data;
     for(int i=0; i < 8; i++){
-        data.push_back(debug_cell->vertices[i].x);
-        data.push_back(debug_cell->vertices[i].y);
-        data.push_back(debug_cell->vertices[i].z);
+        data.push_back(cell->vertices[i].x);
+        data.push_back(cell->vertices[i].y);
+        data.push_back(cell->vertices[i].z);
 
         glm::vec3 color;
-        if(debug_cell->samples[i] > 10)
+        if(cell->samples[i] > 10)
             color = glm::vec3(0.0f);
         else
             color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -547,15 +569,15 @@ GLuint Renderer::create_debug_point_buffer() {
     return loc;
 }
 
-void Renderer::update_debug_points(GLuint buffer) {
+void Renderer::update_debug_points(GLuint buffer, Cube* cell) {
     std::vector<GLfloat> data;
     for(int i=0; i < 8; i++){
-        data.push_back(debug_cell-> vertices[i].x);
-        data.push_back(debug_cell->vertices[i].y);
-        data.push_back(debug_cell->vertices[i].z);
+        data.push_back(cell-> vertices[i].x);
+        data.push_back(cell->vertices[i].y);
+        data.push_back(cell->vertices[i].z);
 
         glm::vec3 color;
-        if(debug_cell->samples[i] > 10)
+        if(cell->samples[i] > 10)
             color = glm::vec3(0.0f);
         else
             color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -574,19 +596,19 @@ void Renderer::update_debug_points(GLuint buffer) {
 
 
 
-GLuint Renderer::create_debug_grid_buffer() {
+GLuint Renderer::create_debug_grid_buffer(Cube* cell) {
     std::vector<GLfloat> data;
     for(int e = 0; e < 12; e++){
-        data.push_back(debug_cell->vertices[edges[e][0]].x); // first vertex of edge
-        data.push_back(debug_cell->vertices[edges[e][0]].y);
-        data.push_back(debug_cell->vertices[edges[e][0]].z);
+        data.push_back(cell->vertices[edges[e][0]].x); // first vertex of edge
+        data.push_back(cell->vertices[edges[e][0]].y);
+        data.push_back(cell->vertices[edges[e][0]].z);
 
         data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
 
-        data.push_back(debug_cell->vertices[edges[e][1]].x); // second vertex of edge
-        data.push_back(debug_cell->vertices[edges[e][1]].y);
-        data.push_back(debug_cell->vertices[edges[e][1]].z);
+        data.push_back(cell->vertices[edges[e][1]].x); // second vertex of edge
+        data.push_back(cell->vertices[edges[e][1]].y);
+        data.push_back(cell->vertices[edges[e][1]].z);
 
         data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
@@ -602,21 +624,21 @@ GLuint Renderer::create_debug_grid_buffer() {
     return loc;
 }
 
-GLuint Renderer::create_debug_tri_buffer() {
+GLuint Renderer::create_debug_tri_buffer(Cube* cell) {
     std::vector<GLfloat> data;
 
-    for(int t=0; t < debug_cell->num_tris*3; t+=3){
+    for(int t=0; t < cell->num_tris*3; t+=3){
         // push vertices -> colors
         // V0
-        data.push_back(debug_cell->tris[t].x); data.push_back(debug_cell->tris[t].y); data.push_back(debug_cell->tris[t].z);
+        data.push_back(cell->tris[t].x); data.push_back(cell->tris[t].y); data.push_back(cell->tris[t].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
         // V1
-        data.push_back(debug_cell->tris[t+1].x); data.push_back(debug_cell->tris[t+1].y); data.push_back(debug_cell->tris[t+1].z);
+        data.push_back(cell->tris[t+1].x); data.push_back(cell->tris[t+1].y); data.push_back(cell->tris[t+1].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
         // V2
-        data.push_back(debug_cell->tris[t+2].x); data.push_back(debug_cell->tris[t+2].y); data.push_back(debug_cell->tris[t+2].z);
+        data.push_back(cell->tris[t+2].x); data.push_back(cell->tris[t+2].y); data.push_back(cell->tris[t+2].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
@@ -632,21 +654,21 @@ GLuint Renderer::create_debug_tri_buffer() {
 
 }
 
-void Renderer::update_debug_tris(GLuint buffer) {
+void Renderer::update_debug_tris(GLuint buffer, Cube* cell) {
     std::vector<GLfloat> data;
 
-    for(int t=0; t < debug_cell->num_tris*3; t+=3){
+    for(int t=0; t < cell->num_tris*3; t+=3){
         // push vertices -> colors
         // V0
-        data.push_back(debug_cell->tris[t].x); data.push_back(debug_cell->tris[t].y); data.push_back(debug_cell->tris[t].z);
+        data.push_back(cell->tris[t].x); data.push_back(cell->tris[t].y); data.push_back(cell->tris[t].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
         // V1
-        data.push_back(debug_cell->tris[t+1].x); data.push_back(debug_cell->tris[t+1].y); data.push_back(debug_cell->tris[t+1].z);
+        data.push_back(cell->tris[t+1].x); data.push_back(cell->tris[t+1].y); data.push_back(cell->tris[t+1].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
         // V2
-        data.push_back(debug_cell->tris[t+2].x); data.push_back(debug_cell->tris[t+2].y); data.push_back(debug_cell->tris[t+2].z);
+        data.push_back(cell->tris[t+2].x); data.push_back(cell->tris[t+2].y); data.push_back(cell->tris[t+2].z);
         data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
 
     }
@@ -656,6 +678,8 @@ void Renderer::update_debug_tris(GLuint buffer) {
 
     sizes[buffer] = data.size();
 }
+
+
 
 
 

@@ -28,7 +28,10 @@ public:
     void update_grid_buffer(GLuint buffer, double isovalue);
 
 
-    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer, GLuint grid_buffer, GLuint debug_points_buffer, GLuint debug_tri_buffer);
+    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer,
+                   GLuint grid_buffer, GLuint debug_points_buffer,
+                   GLuint debug_tri_buffer, GLuint debug_points_buffer2,
+                   GLuint debug_tri_buffer2);
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
@@ -46,12 +49,14 @@ public:
 
     // Debugging cell
     void setDebugCell(Cube* cell);
+    void setDebugCell2(Cube* cell);
+
     void enableDebug();
-    GLuint create_debug_point_buffer();
-    GLuint create_debug_grid_buffer();
-    GLuint create_debug_tri_buffer();
-    void update_debug_points(GLuint buffer);
-    void update_debug_tris(GLuint buffer);
+    GLuint create_debug_point_buffer(Cube* cell);
+    GLuint create_debug_grid_buffer(Cube* cell);
+    GLuint create_debug_tri_buffer(Cube* cell);
+    void update_debug_points(GLuint buffer, Cube* cell);
+    void update_debug_tris(GLuint buffer, Cube* cell);
 
 
 private:
@@ -68,6 +73,8 @@ private:
     int num_cells;
 
     Cube* debug_cell;
+    Cube* debug_cell2;
+
     bool debug = false;
 
     // Shaders

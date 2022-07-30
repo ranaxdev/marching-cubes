@@ -39,9 +39,15 @@ public:
 
     // debug buffers
     Cube* debug_cell;
+    Cube* debug_cell2;
+
     GLuint debug_grid_buffer;
     GLuint debug_points_buffer;
     GLuint debug_tri_buffer;
+
+    GLuint debug_grid_buffer2;
+    GLuint debug_points_buffer2;
+    GLuint debug_tri_buffer2;
 
 
     void startup() override {
@@ -91,10 +97,23 @@ public:
 
         // Cell debugging sample
         R->enableDebug();
-        R->setDebugCell(generate_debug_sample());
-        debug_points_buffer = R->create_debug_point_buffer();
-        debug_grid_buffer = R->create_debug_grid_buffer();
-        debug_tri_buffer = R->create_debug_tri_buffer();
+
+        debug_cell = generate_debug_sample(glm::vec3(15.0f, 0.0f ,0.0f));
+        debug_cell2 = generate_debug_sample(glm::vec3(15.0f, 0.0f ,1.01f));
+
+        R->setDebugCell(debug_cell);
+        R->setDebugCell2(debug_cell2);
+
+        debug_points_buffer = R->create_debug_point_buffer(debug_cell);
+        debug_grid_buffer = R->create_debug_grid_buffer(debug_cell);
+        debug_tri_buffer = R->create_debug_tri_buffer(debug_cell);
+
+        debug_points_buffer2 = R->create_debug_point_buffer(debug_cell2);
+        debug_grid_buffer2 = R->create_debug_grid_buffer(debug_cell2);
+        debug_tri_buffer2 = R->create_debug_tri_buffer(debug_cell2);
+
+
+
 
 
         // Main sample
@@ -117,7 +136,7 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu, points_buffer, tri_buffer, lines_buffer, debug_points_buffer, debug_tri_buffer);
+        R->renderGUI(*menu, points_buffer, tri_buffer, lines_buffer, debug_points_buffer, debug_tri_buffer, debug_points_buffer2, debug_tri_buffer2);
 
         // Axis
         R->renderAxis(axis_buffer);
@@ -131,6 +150,12 @@ public:
         R->renderPoints(debug_points_buffer);
         R->renderLines(debug_grid_buffer);
         R->renderTris(debug_tri_buffer, true);
+
+        // Debug sample
+        R->renderPoints(debug_points_buffer2);
+        R->renderLines(debug_grid_buffer2);
+        R->renderTris(debug_tri_buffer2, true);
+
     }
 };
 

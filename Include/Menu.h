@@ -23,6 +23,10 @@ public:
     std::vector<int> debug_clicked;
     bool* debug_vertices[8];
 
+    std::vector<int> debug_clicked2;
+    bool* debug_vertices2[8];
+
+
 
 };
 
