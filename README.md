@@ -14,4 +14,10 @@
 - nrrd format, write about raw data used
 - debugging stuff
 
-
+- Wyvill blobby surfaces 1986
+- Summary at end of each chapter
+- For validation write not only results but discussion (important)
+- For validation: triangle output match, performance with other MC impl,
+- See performance with other objs too not just fuel injector
+  gradient vs face comparison (qualitative evaluation)
+  - Design section?

@@ -371,8 +371,6 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
 
         if(g.debug_clicked2[i])
         {
-            std::cout << "Clicked" << std::endl;
-
             if(*g.debug_vertices2[i])
                 debug_cell2->samples[i] = 9;
             else
