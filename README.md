@@ -21,3 +21,7 @@
 - See performance with other objs too not just fuel injector
   gradient vs face comparison (qualitative evaluation)
   - Design section?
+
+  - project aim (what is the purpose), should be like evaluating marching cubes
+    to see if its still a viable method ie doesnt have to bring new research,
+    just reconfirm that its good
