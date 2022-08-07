@@ -286,8 +286,7 @@ void Renderer::renderTris(GLuint buffer, bool debug_tris) {
 
     if(!debug_tris){
         glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
-
+//        trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
         shader_phong.bind();
         shader_phong.setMat4(20, qaiser::Harness::VP);
@@ -337,7 +336,7 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
 
     // Triangle output file requested
     if(g.output_file_btn){
-        output_triangles(cells, num_cells, std::string(SRC+"triangles.txt").c_str());
+        output_triangles(cells, num_cells, std::string(SRC+"triangles.obj").c_str());
     }
 
     // Regenerate with different functions

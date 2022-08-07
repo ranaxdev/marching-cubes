@@ -255,12 +255,12 @@ Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uin
     for(int x =0; x < res; x++){
         for(int y=0; y<res; y++){
             for(int z=0; z<res; z++){
-                p_x1 = (glm::vec3(x+1, y, z) + grid_start) * grid_size;
-                p_x2 = (glm::vec3(x-1, y, z) + grid_start) * grid_size;
-                p_y1 = (glm::vec3(x, y+1, z) + grid_start) * grid_size;
-                p_y2 = (glm::vec3(x, y-1, z) + grid_start) * grid_size;
-                p_z1 = (glm::vec3(x, y, z+1) + grid_start) * grid_size;
-                p_z2 = (glm::vec3(x, y, z-1) + grid_start) * grid_size;
+                p_x1 = (glm::vec3(x+1, y, z) + grid_start);
+                p_x2 = (glm::vec3(x-1, y, z) + grid_start);
+                p_y1 = (glm::vec3(x, y+1, z) + grid_start);
+                p_y2 = (glm::vec3(x, y-1, z) + grid_start);
+                p_z1 = (glm::vec3(x, y, z+1) + grid_start);
+                p_z2 = (glm::vec3(x, y, z-1) + grid_start);
 
                 if(x == 0 || y == 0 || z == 0){
                     grad_x = grad_y = grad_z = 0.0f;

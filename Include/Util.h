@@ -7,4 +7,6 @@
 
 int output_triangles(Cube** cells, int num_cells, const char* filepath);
 
+int output_pointcloud(std::uint8_t*** data, int res, const char* filepath);
+
 #endif
