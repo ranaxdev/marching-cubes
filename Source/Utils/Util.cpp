@@ -1,6 +1,6 @@
 #include "Util.h"
 
-
+// Generate .OBJ file out of triangles from isosurface
 int output_triangles(Cube** cells, int num_cells, const char* filepath){
     FILE* fp;
     fp = fopen(filepath, "w");
@@ -78,22 +78,70 @@ int output_triangles(Cube** cells, int num_cells, const char* filepath){
 }
 
 
-int output_pointcloud(std::uint8_t*** data, int res, const char* filepath){
-    FILE* fp;
-    fp = fopen(filepath, "w");
+// Get dimension sizes from NHDR file
+std::vector<int> parse_nhdr_sizes(const char* filepath){
+    std::vector<int> dims;
+    std::ifstream header(filepath);
+    std::string line;
 
-    // Check for file open error
-    if(fp == nullptr){
-        std::printf("[ERROR] Could not open file %s for writing!\n", filepath);
-        return -1;
-    }
+    while(true){
+        std::getline(header, line);
+        // End
+        if(line.length() < 1)
+            break;
 
-    // Print point cloud in x,y,z\n format
-    for(int x =0; x < res; x++){
-        for(int y =0; y < res; y++){
-            for(int z=0; z < res; z++){
+        // Ignore comment
+        if(line[0] == '#')
+            continue;
 
+        size_t delim = line.find(": "); // delimiter
+        if (delim != std::string::npos){
+            std::string field = line.substr(0, delim);
+            std::string desc = trim_string(line.substr(delim + 2));
+
+            // Care about dimensions field NX*NY*NZ
+            if(field == "sizes"){
+                std::vector<std::string> sizes;
+                split_string(desc, sizes);
+
+                dims.push_back(std::stoi(sizes[0]));
+                dims.push_back(std::stoi(sizes[1]));
+                dims.push_back(std::stoi(sizes[2]));
+
+                break;
             }
         }
     }
+
+    return dims;
+}
+
+
+// Helper functions
+std::string trim_string(std::string s)
+{
+    size_t begin = 0;
+    while ((begin < s.length()) && (isspace(s[begin])))
+        begin++;
+
+    size_t end = s.length();
+    while ((end > begin) && (isspace(s[end - 1])))
+        end--;
+    return s.substr(begin, end - begin);
+}
+
+
+
+void split_string(std::string s, std::vector<std::string>& v){
+    std::string t = "";
+    for(char i : s){
+        if(i==' '){
+            v.push_back(t);
+            t = "";
+        }
+        else{
+            t.push_back(i);
+        }
+    }
+    v.push_back(t);
 }

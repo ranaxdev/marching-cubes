@@ -2,7 +2,7 @@
 #include <iostream>
 
 Menu::Menu() {
-    Menu::size = ImVec2(360.0f, 480.0f);
+    Menu::size = ImVec2(360.0f, 640.0f);
     Menu::pos = ImVec2(SCREEN_W-size.x, 0.0f);
 
 
@@ -45,8 +45,7 @@ void Menu::update() {
         model = 1;
     }
 
-//    isoChanging = ImGui::SliderFloat("Isovalue", &iso, 0.0f, 200.0f);
-    ImGui::InputFloat("Isolevel", &iso, 5.0f, 10.0f);
+    ImGui::InputFloat("Isovalue", &iso, 5.0f, 10.0f);
 
     ImGui::NewLine();
     // Debug vertices
@@ -62,10 +61,30 @@ void Menu::update() {
 
     // Debug vertices2
 
+    ImGui::NewLine();
+
+    // NHDR header load file dialog & Button
+    if(ImGui::Button("Load NHDR")){
+        load_nhdr_dialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".nhdr", ".");
+    }
+    if (load_nhdr_dialog.Display("ChooseFileDlgKey"))
+    {
+        // OK clicked on file
+        if (load_nhdr_dialog.IsOk())
+        {
+            nhdr_filename = load_nhdr_dialog.GetFilePathName();
+            nhdr_loaded = true;
+        }
+        // close dialog after loading it in
+        load_nhdr_dialog.Close();
+    }
+
+
+
 
     ImGui::NewLine();
-    isoChanging = ImGui::Button("Regenerate"); ImGui::SameLine();
-    output_file_btn = ImGui::Button("Output Tris");
+    isoChanging = ImGui::Button("Regenerate"); ImGui::SameLine(); // Regenerate isosurface with current isovalue
+    output_file_btn = ImGui::Button("Output Tris"); // Output triangles to .obj file
 
 
     ImGui::End();

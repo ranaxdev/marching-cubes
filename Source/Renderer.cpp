@@ -334,6 +334,19 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
         update_tri_buffer(tri_buffer, g.iso);
     }
 
+    // Loading NHDR header file requested
+    if(g.nhdr_loaded){
+
+        std::vector<int> dimensions = parse_nhdr_sizes(g.nhdr_filename.c_str());
+        NX = dimensions[0];
+        NY = dimensions[1];
+        NZ = dimensions[2];
+
+        // Reset
+        g.nhdr_filename = "";
+        g.nhdr_loaded = false;
+    }
+
     // Triangle output file requested
     if(g.output_file_btn){
         output_triangles(cells, num_cells, std::string(SRC+"triangles.obj").c_str());

@@ -90,8 +90,6 @@ public:
         }
 
 
-
-
         menu = new Menu();
 
 
@@ -114,12 +112,7 @@ public:
 
 
 
-
-
         // Main sample
-//        samples = generate_samples2(64, buffer);
-//        samples = generate_samples3(64, buffer);
-
         cells = generate_samples(glm::vec3(0.0f), 63, 2.0, buffer, 0.010);
         R->setCells(cells, buffer, 63*63*63);
 

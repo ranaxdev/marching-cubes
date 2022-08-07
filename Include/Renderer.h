@@ -68,6 +68,7 @@ private:
     std::vector<GLsizei> sizes;
 
     // Marching cubes data
+    int NX, NY, NZ;
     Cube** cells;
     std::uint8_t*** mc_buffer;
     int num_cells;
@@ -78,7 +79,6 @@ private:
     bool debug = false;
 
     // Shaders
-    // REMINDER: change environment variable SRC in globals to setup shaders correctly
     Shader shader_axis = Shader(SRC+"Shaders/vert.glsl", SRC+"Shaders/frag.glsl");
     Shader shader_phong = Shader(SRC+"Shaders/vert0.glsl", SRC+"Shaders/frag0.glsl");
 
