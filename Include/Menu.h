@@ -30,6 +30,7 @@ public:
     std::string nrrd_filename;
     bool nhdr_loaded = false;
     bool nrrd_loaded = false;
+    bool mesh_active = false;
 
 
     // Vertex selection buttons for debug cells

@@ -313,11 +313,14 @@ void Renderer::renderTris(GLuint buffer, bool debug_tris) {
  * Buffer adaption (later):
  *  - Pass array of buffer locations e.g. point buffers, then update them all accordingly
  */
-void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
-                         GLuint grid_buffer, GLuint debug_points_buffer,
+void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
                          GLuint debug_tri_buffer, GLuint debug_points_buffer2,
                          GLuint debug_tri_buffer2) {
     g.update();
+
+    if(g.mesh_active){
+        renderTris(tri_buffer);
+    }
 
     // Isovalue has been edited, regenerate mesh and update buffers
     if(g.isoChanging)
@@ -346,6 +349,24 @@ void Renderer::renderGUI(Menu &g, GLuint points_buffer, GLuint tri_buffer,
         g.nhdr_filename = "";
         g.nhdr_loaded = false;
     }
+
+
+    // Loading NRRD file data into buffer and generating mesh
+    if(g.nrrd_loaded){
+        mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
+
+        cells = generate_samples(glm::vec3(0.0f), NX-1, 2.0, mc_buffer, 0.010);
+        setCells(cells, (NX-1)*(NY-1)*(NZ-1));
+
+        points_buffer = create_point_buffer();
+        grid_buffer =  create_grid_buffer();
+        tri_buffer = create_tri_buffer();
+
+        // Reset
+        g.nrrd_filename = "";
+        g.nrrd_loaded = false;
+    }
+
 
     // Triangle output file requested
     if(g.output_file_btn){
@@ -516,10 +537,9 @@ void Renderer::formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attr
 
 
 
-void Renderer::setCells(Cube** c, std::uint8_t*** buffer, int num_cell) {
+void Renderer::setCells(Cube** c, int num_cell) {
 
     cells = c;
-    mc_buffer = buffer;
     num_cells = num_cell;
 }
 

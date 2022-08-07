@@ -78,6 +78,23 @@ void Menu::update() {
         // close dialog after loading it in
         load_nhdr_dialog.Close();
     }
+    ImGui::SameLine();
+    // NRRD data load file dialog & Button
+    if(ImGui::Button("Load Data")){
+        load_nrrd_dialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".raw", ".");
+    }
+    if (load_nrrd_dialog.Display("ChooseFileDlgKey"))
+    {
+        // OK clicked on file
+        if (load_nrrd_dialog.IsOk())
+        {
+            nrrd_filename = load_nrrd_dialog.GetFilePathName();
+            nrrd_loaded = true;
+            mesh_active = true;
+        }
+        // close dialog after loading it in
+        load_nrrd_dialog.Close();
+    }
 
 
 

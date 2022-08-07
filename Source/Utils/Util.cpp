@@ -117,6 +117,39 @@ std::vector<int> parse_nhdr_sizes(const char* filepath){
 }
 
 
+// Create 3D buffer from parsing NRRD file data
+std::uint8_t*** parse_nrrd_file(const char* filepath, int NX, int NY, int NZ){
+    FILE* fileptr;
+    std::uint8_t*** buffer = nullptr;
+    long fsize;
+
+    fileptr = fopen(filepath, "rb");
+
+    int c;
+    buffer = static_cast<uint8_t ***>(malloc(NX * sizeof(std::uint8_t **)));
+
+    for(int i=0; i < NX; i++)
+        buffer[i] = static_cast<uint8_t **>(malloc(NY * sizeof(std::uint8_t *)));
+    for(int i=0; i < NX; i++)
+        for(int j=0; j < NY; j++)
+            buffer[i][j] = static_cast<uint8_t *>(malloc(NZ * sizeof(std::uint8_t)));
+
+        for(int k=0; k < NZ; k++)
+        {
+            for(int j=0; j < NY; j++){
+                for(int i=0; i < NX; i++){
+                    if((c = fgetc(fileptr)) == EOF){
+                        break;
+                    }
+                    buffer[i][j][k] = c;
+                }
+            }
+        }
+
+    return buffer;
+}
+
+
 // Helper functions
 std::string trim_string(std::string s)
 {

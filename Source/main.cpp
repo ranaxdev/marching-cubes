@@ -33,9 +33,6 @@ public:
 
     // MC buffers
     GLuint axis_buffer;
-    GLuint lines_buffer;
-    GLuint points_buffer;
-    GLuint tri_buffer;
 
     // debug buffers
     Cube* debug_cell;
@@ -51,45 +48,7 @@ public:
 
 
     void startup() override {
-
-        // TEMP - read nrrd file
-        FILE* fileptr;
-        std::uint8_t*** buffer = nullptr;
-        long fsize;
-
-        fileptr = fopen(std::string(SRC+"Res/fuel.raw").c_str(), "rb");
-
-        // Get size and reset
-        fseek(fileptr, 0, SEEK_END);
-        fsize = ftell(fileptr);
-        rewind(fileptr);
-
-
-        int NX = 64;
-        int NY = 64;
-        int NZ = 64;
-        int c;
-        buffer = static_cast<uint8_t ***>(malloc(NX * sizeof(std::uint8_t **)));
-
-        for(int i=0; i < NX; i++)
-            buffer[i] = static_cast<uint8_t **>(malloc(NY * sizeof(std::uint8_t *)));
-        for(int i=0; i < NX; i++)
-            for(int j=0; j < NY; j++)
-                buffer[i][j] = static_cast<uint8_t *>(malloc(NZ * sizeof(std::uint8_t)));
-
-        for(int k=0; k < NZ; k++)
-        {
-            for(int j=0; j < NY; j++){
-                for(int i=0; i < NX; i++){
-                    if((c = fgetc(fileptr)) == EOF){
-                        break;
-                    }
-                    buffer[i][j][k] = c;
-                }
-            }
-        }
-
-
+        // Init GUI
         menu = new Menu();
 
 
@@ -112,14 +71,8 @@ public:
 
 
 
-        // Main sample
-        cells = generate_samples(glm::vec3(0.0f), 63, 2.0, buffer, 0.010);
-        R->setCells(cells, buffer, 63*63*63);
-
         axis_buffer = R->enableAxis();
-        points_buffer = R->create_point_buffer();
-        lines_buffer = R->create_grid_buffer();
-        tri_buffer = R->create_tri_buffer();
+
     };
 
 
@@ -129,15 +82,10 @@ public:
         campos = camera->getCamPos();
 
         // GUI
-        R->renderGUI(*menu, points_buffer, tri_buffer, lines_buffer, debug_points_buffer, debug_tri_buffer, debug_points_buffer2, debug_tri_buffer2);
+        R->renderGUI(*menu, debug_points_buffer, debug_tri_buffer, debug_points_buffer2, debug_tri_buffer2);
 
         // Axis
         R->renderAxis(axis_buffer);
-
-        // Main sample
-//        R->renderPoints(points_buffer);
-//        R->renderLines(lines_buffer);
-        R->renderTris(tri_buffer);
 
         // Debug sample
         R->renderPoints(debug_points_buffer);

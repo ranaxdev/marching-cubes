@@ -28,8 +28,7 @@ public:
     void update_grid_buffer(GLuint buffer, double isovalue);
 
 
-    void renderGUI(Menu& g, GLuint points_buffer, GLuint tri_buffer,
-                   GLuint grid_buffer, GLuint debug_points_buffer,
+    void renderGUI(Menu& g, GLuint debug_points_buffer,
                    GLuint debug_tri_buffer, GLuint debug_points_buffer2,
                    GLuint debug_tri_buffer2);
     void renderAxis(GLuint buffer);
@@ -44,7 +43,7 @@ public:
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
-    void setCells(Cube** c, std::uint8_t*** buffer, int num_cell);
+    void setCells(Cube** c, int num_cell);
 
 
     // Debugging cell
@@ -69,6 +68,7 @@ private:
 
     // Marching cubes data
     int NX, NY, NZ;
+    GLuint points_buffer, grid_buffer, tri_buffer;
     Cube** cells;
     std::uint8_t*** mc_buffer;
     int num_cells;
