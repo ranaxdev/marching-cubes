@@ -59,7 +59,9 @@ void Menu::update() {
     debug_clicked[7] = ImGui::Checkbox("V7", debug_vertices[7]);     ImGui::SameLine(); debug_clicked2[7] = ImGui::Checkbox("       ", debug_vertices2[7]);
 
 
-    // Debug vertices2
+    ImGui::NewLine();
+    ImGui::SliderFloat("Scale", &scale, 0.01f, 1.0f);
+
 
     ImGui::NewLine();
 

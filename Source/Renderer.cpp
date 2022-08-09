@@ -277,11 +277,11 @@ void Renderer::renderLines(GLuint buffer) {
 }
 
 
-void Renderer::renderTris(GLuint buffer, bool debug_tris) {
+void Renderer::renderTris(GLuint buffer, bool debug_tris, glm::vec3 scale) {
 
     if(!debug_tris){
         glm::mat4 trans = glm::mat4(1.0f);
-//        trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
+        trans = glm::scale(trans, scale);
 
         shader_phong.bind();
         shader_phong.setMat4(20, qaiser::Harness::VP);
@@ -314,7 +314,7 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
     g.update();
 
     if(g.mesh_active){
-        renderTris(tri_buffer);
+        renderTris(tri_buffer, false, glm::vec3(g.scale));
     }
 
     // Isovalue has been edited, regenerate mesh and update buffers

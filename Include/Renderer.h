@@ -34,7 +34,7 @@ public:
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
-    void renderTris(GLuint buffer, bool debug_tris=false);
+    void renderTris(GLuint buffer, bool debug_tris=false, glm::vec3 scale=glm::vec3(1.0f));
 
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
