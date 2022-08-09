@@ -181,25 +181,23 @@ GLuint Renderer::create_tri_buffer() {
             // push vertices -> colors -> normals
             // V0
             data.push_back(cells[c]->tris[t].x); data.push_back(cells[c]->tris[t].y); data.push_back(cells[c]->tris[t].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t].x); data.push_back(cells[c]->normals[t].y); data.push_back(cells[c]->normals[t].z);
 
             // V1
             data.push_back(cells[c]->tris[t+1].x); data.push_back(cells[c]->tris[t+1].y); data.push_back(cells[c]->tris[t+1].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t+1].x); data.push_back(cells[c]->normals[t+1].y); data.push_back(cells[c]->normals[t+1].z);
 
             // V2
             data.push_back(cells[c]->tris[t+2].x); data.push_back(cells[c]->tris[t+2].y); data.push_back(cells[c]->tris[t+2].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t+2].x); data.push_back(cells[c]->normals[t+2].y); data.push_back(cells[c]->normals[t+2].z);
 
         }
     }
-    GLuint loc = prepBuf(data, true);
+    GLuint loc = prepBuf(data, false);
+    std::cout << "TRI DATA SIZE: " << data.size() * 4 << std::endl;
 
 
-    formatBuf(loc, 3, {0, 1, 2});
+    formatBuf(loc, 3, {0, 2});
 
     // Save size
     sizes[loc] = data.size();
@@ -215,17 +213,14 @@ void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
             // push vertices -> colors -> normals
             // V0
             data.push_back(cells[c]->tris[t].x); data.push_back(cells[c]->tris[t].y); data.push_back(cells[c]->tris[t].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t].x); data.push_back(cells[c]->normals[t].y); data.push_back(cells[c]->normals[t].z);
 
             // V1
             data.push_back(cells[c]->tris[t+1].x); data.push_back(cells[c]->tris[t+1].y); data.push_back(cells[c]->tris[t+1].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t+1].x); data.push_back(cells[c]->normals[t+1].y); data.push_back(cells[c]->normals[t+1].z);
 
             // V2
             data.push_back(cells[c]->tris[t+2].x); data.push_back(cells[c]->tris[t+2].y); data.push_back(cells[c]->tris[t+2].z);
-            data.push_back(0.0f); data.push_back(0.0f); data.push_back(1.0f);
             data.push_back(cells[c]->normals[t+2].x); data.push_back(cells[c]->normals[t+2].y); data.push_back(cells[c]->normals[t+2].z);
 
         }
@@ -330,10 +325,10 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
         }
         delete[] cells;
 
-        cells = generate_samples(glm::vec3(0.0f), 63, 1.0, mc_buffer, g.iso);
+        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 1.0, mc_buffer, g.iso);
 
-        update_points_buffer(points_buffer, g.iso);
-        update_grid_buffer(grid_buffer, g.iso);
+//        update_points_buffer(points_buffer, g.iso);
+//        update_grid_buffer(grid_buffer, g.iso);
         update_tri_buffer(tri_buffer, g.iso);
     }
 
@@ -355,11 +350,11 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
     if(g.nrrd_loaded){
         mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
 
-        cells = generate_samples(glm::vec3(0.0f), NX-1, 2.0, mc_buffer, 0.010);
+        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, 0.010, false);
         setCells(cells, (NX-1)*(NY-1)*(NZ-1));
 
-        points_buffer = create_point_buffer();
-        grid_buffer =  create_grid_buffer();
+//        points_buffer = create_point_buffer();
+//        grid_buffer =  create_grid_buffer();
         tri_buffer = create_tri_buffer();
 
         // Reset
@@ -484,10 +479,16 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
     int size = (int) data.size();
     int dat_size = 4*size;
 
+
     int previous_size = 4*sizes[i];
+
+
+    std::cout << "new size: " << dat_size  << " / " << previous_size << std::endl;
+
 
     // Buffer overflowed
     if(dat_size >= TEN_MB){
+        std::cout << dat_size << " / " << TEN_MB << std::endl;
         Logger::log(ERROR, "Buffer overflowed, buffer ID: "+ std::to_string(i), __FILENAME__);
     }
 

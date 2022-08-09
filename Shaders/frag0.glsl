@@ -1,6 +1,5 @@
 #version 450 core
 
-in vec4 vcolor;
 in vec3 vfragpos;
 in vec3 vnormal;
 
@@ -11,7 +10,7 @@ out vec4 color;
 void main(void){
 
     vec3 lightcol = vec3(1.0f, 1.0f, 1.0f);
-    vec3 objectcol = vec3(vcolor.xyz);
+    vec3 objectcol = vec3(0.0f, 0.0f, 1.0f);
     vec3 lightpos = vec3(3.0f, 5.0f, 0.0f);
 
     float ambient_s = 0.1;

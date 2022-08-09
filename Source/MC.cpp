@@ -92,7 +92,7 @@ void make_cube_index(int& cube_index, double* samples, double isovalue){
  * This routine marches a single cube and returns information about the cell
  * Such as the cube's corner vertex, the triangulated vertices and the normals
  */
-Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue){
+Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue, bool store_grid){
 
     // One of the cube's corners needed to look into its other corners by offsetting
     int x = static_cast<int>(cube_start.x);
@@ -133,9 +133,12 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
     // If cube fully inside or outside surface, return empty cube (no triangles insides)
     if(edgeTable[cube_index] == 0){
         Cube* c = new Cube(cube_start, triangle_points, triangle_normals, num_tris);
-        for(int i=0; i < 8; i++){
-            c->vertices[i] = vertices[i];
-            c->samples[i] = samples[i];
+
+        if(store_grid){
+            for(int i=0; i < 8; i++){
+                c->vertices[i] = vertices[i];
+                c->samples[i] = samples[i];
+            }
         }
 
         return c;
@@ -224,9 +227,11 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
     }
 
     Cube* c = new Cube(cube_start, triangle_points, triangle_normals, num_tris);
-    for(int i=0; i < 8; i++){
-        c->vertices[i] = vertices[i];
-        c->samples[i] = samples[i];
+    if(store_grid){
+        for(int i=0; i < 8; i++){
+            c->vertices[i] = vertices[i];
+            c->samples[i] = samples[i];
+        }
     }
     return c;
 }
@@ -237,14 +242,14 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
 /*
  * Routine to generate a marching cubes grid, sample the points and march each cell
  */
-Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uint8_t*** sdf, double isovalue){
+Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, float grid_size, std::uint8_t*** sdf, double isovalue, bool store_grid){
 
 
-    glm::vec3 ***gradients = new glm::vec3**[res+1];
-    for (int i = 0; i < res+1; i++) {
-        gradients[i] = new glm::vec3*[res+1];
-        for (int j = 0; j < res+1; j++) {
-            gradients[i][j] = new glm::vec3[res+1];
+    glm::vec3 ***gradients = new glm::vec3**[resX+1];
+    for (int i = 0; i < resX+1; i++) {
+        gradients[i] = new glm::vec3*[resY+1];
+        for (int j = 0; j < resY+1; j++) {
+            gradients[i][j] = new glm::vec3[resZ+1];
         }
     }
 
@@ -252,9 +257,9 @@ Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uin
     glm::vec3 p_x1, p_x2, p_y1, p_y2, p_z1, p_z2;
     float grad_x, grad_y, grad_z;
 
-    for(int x =0; x < res; x++){
-        for(int y=0; y<res; y++){
-            for(int z=0; z<res; z++){
+    for(int x =0; x < resX; x++){
+        for(int y=0; y<resY; y++){
+            for(int z=0; z<resZ; z++){
                 p_x1 = (glm::vec3(x+1, y, z) + grid_start);
                 p_x2 = (glm::vec3(x-1, y, z) + grid_start);
                 p_y1 = (glm::vec3(x, y+1, z) + grid_start);
@@ -277,19 +282,22 @@ Cube** generate_samples(glm::vec3 grid_start, int res, float grid_size, std::uin
         }
     }
 
-    Cube** cubes = new Cube*[res*res*res];
+    Cube** cubes = new Cube*[resX*resY*resZ];
 
     // March each cube
     float cube_length = grid_size /2;
-    for(int x =0; x < res; x++){
-        for(int y =0; y < res; y++){
-            for(int z =0; z < res; z++){
-                int idx = res*res*x + res*y + z;
+    for(int x =0; x < resX; x++){
+        for(int y =0; y < resY; y++){
+            for(int z =0; z < resZ; z++){
+                int idx = x + resX * (y + resY * z); // flatten 3d array index
+
                 glm::vec3 cube_start = glm::vec3(x,y,z) + grid_start;
+
                 cubes[idx] = march(cube_start, cube_length, sdf, gradients, isovalue);
             }
         }
     }
+
 
 
     return cubes;
