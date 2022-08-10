@@ -3,7 +3,7 @@ project(MarchingCubes)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES Include/stb/stb_image.h Include/stb/stb_image_resize.h Include/ImGuiFileDialogConfig.h Include/ImGuiFileDialog.h Source/Utils/ImGuiFileDialog.cpp Source/main.cpp Source/Harness.cpp Include/Harness.h Source/Shader.cpp Include/Shader.h Source/Camera.cpp Include/Camera.h Include/KeyListener.h Source/Utils/Logger.cpp Include/Logger.h Include/Globals.h Source/Renderer.cpp Include/Renderer.h Source/GUI/GUI.cpp Include/GUI.h Source/Utils/KeyListener.cpp)
+set(SOURCE_FILES Include/ImGuiFileDialogConfig.h Include/ImGuiFileDialog.h Source/Utils/ImGuiFileDialog.cpp Source/main.cpp Source/Harness.cpp Include/Harness.h Source/Shader.cpp Include/Shader.h Source/Camera.cpp Include/Camera.h Include/KeyListener.h Source/Utils/Logger.cpp Include/Logger.h Include/Globals.h Source/Renderer.cpp Include/Renderer.h Source/GUI/GUI.cpp Include/GUI.h Source/Utils/KeyListener.cpp)
 
 set(IMGUI_SOURCE_FILES
         external/imgui/imgui.cpp

@@ -193,6 +193,8 @@ GLuint Renderer::create_tri_buffer() {
 
         }
     }
+
+
     GLuint loc = prepBuf(data, false);
     std::cout << "TRI DATA SIZE: " << data.size() * 4 << std::endl;
 
@@ -350,7 +352,7 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
     if(g.nrrd_loaded){
         mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
 
-        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, 0.010, false);
+        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, g.iso, false);
         setCells(cells, (NX-1)*(NY-1)*(NZ-1));
 
 //        points_buffer = create_point_buffer();

@@ -233,6 +233,7 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
             c->samples[i] = samples[i];
         }
     }
+
     return c;
 }
 
@@ -284,6 +285,7 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
 
     Cube** cubes = new Cube*[resX*resY*resZ];
 
+    int res = resX*resY*resZ;
     // March each cube
     float cube_length = grid_size /2;
     for(int x =0; x < resX; x++){
@@ -294,6 +296,7 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
                 glm::vec3 cube_start = glm::vec3(x,y,z) + grid_start;
 
                 cubes[idx] = march(cube_start, cube_length, sdf, gradients, isovalue);
+
             }
         }
     }
