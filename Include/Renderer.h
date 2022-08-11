@@ -79,6 +79,7 @@ private:
     // Secondary (math implicit functions)
     GLuint math_points_buffer, math_grid_buffer, math_tri_buffer; // live f(x,y,z) generated function buffers
     Cube** math_cells;
+    int math_res = 10;
     int math_num_cells;
 
     // Debug cells

@@ -333,8 +333,6 @@ Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue
                     cell->samples[i] = func(cube_start + baseVertices[i]);
                 }
 
-                std::cout << idx << std::endl;
-
                 march_debug_cell(cell, isovalue);
 
                 cubes[idx] = cell;

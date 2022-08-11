@@ -302,8 +302,11 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
         }
 
         renderTris(math_tri_buffer, true, glm::vec3(g.scale));
-        renderPoints(math_points_buffer);
-        renderLines(math_grid_buffer);
+
+        if(g.show_grid){
+            renderPoints(math_points_buffer);
+            renderLines(math_grid_buffer);
+        }
     }
 
 
@@ -345,11 +348,11 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
     // Regenerating mathematical implicit functions
     if(g.sphere_btn || g.bumps_btn){
-        math_num_cells = 20*20*20;
+        math_num_cells = math_res*math_res*math_res;
         if(g.model == 0)
-            math_cells = generate_math_samples(20, sample_sphere, g.iso);
+            math_cells = generate_math_samples(math_res, sample_sphere, g.iso);
         if(g.model == 1)
-            math_cells = generate_math_samples(20 , sample_bumps, g.iso);
+            math_cells = generate_math_samples(math_res , sample_bumps, g.iso);
 
         math_tri_buffer = create_tri_buffer(math_cells, math_num_cells, true);
         math_points_buffer = create_point_buffer(math_cells, math_num_cells, g.iso);
