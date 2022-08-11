@@ -25,6 +25,7 @@ public:
     bool isoChanging = false;
     float iso = 0.01f;
     float scale = 1.0f;
+    bool math_active = false;
 
     ImGuiFileDialog load_nrrd_dialog;
     ImGuiFileDialog load_nhdr_dialog;

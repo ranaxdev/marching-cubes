@@ -317,7 +317,7 @@ Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue
 
     Cube** cubes = new Cube*[262144];
 
-    glm::vec3 grid_start = glm::vec3(-32.0f, -32.0f, -32.0f);
+    glm::vec3 grid_start = glm::vec3(-res/2, -res/2, -res/2);
 
     for(int x =0; x < res; x++){
         for(int y =0; y < res; y++){
@@ -333,6 +333,8 @@ Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue
                     cell->samples[i] = func(cube_start + baseVertices[i]);
                 }
 
+                std::cout << idx << std::endl;
+
                 march_debug_cell(cell, isovalue);
 
                 cubes[idx] = cell;
@@ -343,10 +345,6 @@ Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue
     return cubes;
 
 }
-
-
-
-
 
 
 
@@ -473,5 +471,11 @@ void march_debug_cell(Cube* cell, double isovalue){
         cell->tris[i] = t_v[triTable[cube_index][i]];
         cell->tris[i + 1] = t_v[triTable[cube_index][i + 1]];
         cell->tris[i + 2] = t_v[triTable[cube_index][i + 2]];
+
+        glm::vec3 normal = glm::cross(cell->tris[i+1]-cell->tris[i], cell->tris[i+2]-cell->tris[i]);
+        cell->normals[i] = normal;
+        cell->normals[i+1] = normal;
+        cell->normals[i+2] = normal;
+
     }
 }

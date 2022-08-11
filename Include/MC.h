@@ -54,7 +54,6 @@ static const glm::vec3 baseVertices[8]=
         };
 
 
-Cube* generate_debug_sample(glm::vec3 pos);
 
 double sample_sphere(glm::vec3 position);
 double sample_bumps(glm::vec3 position);
@@ -64,9 +63,12 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
 void make_cube_index(int& cube_index, double* samples, double isovalue);
 glm::vec3 calc_normal(const Triangle& t);
 
-Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue, bool store_grid=true);
-void march_debug_cell(Cube* cell, double isovalue);
 Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, float grid_size, std::uint8_t*** sdf, double isovalue, bool store_grid=true);
+Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue, bool store_grid=true);
+
+Cube* generate_debug_sample(glm::vec3 pos);
+void march_debug_cell(Cube* cell, double isovalue);
+
 Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue);
 
 

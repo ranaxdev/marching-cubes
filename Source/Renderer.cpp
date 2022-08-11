@@ -46,7 +46,7 @@ GLuint Renderer::enableAxis() {
 
 }
 
-GLuint Renderer::create_point_buffer(Cube** target_cells, int amount, int update) {
+GLuint Renderer::create_point_buffer(Cube** target_cells, int amount, double isovalue, int update) {
     std::vector<GLfloat> data;
 
     for(int c=0; c < amount; c++){
@@ -56,7 +56,7 @@ GLuint Renderer::create_point_buffer(Cube** target_cells, int amount, int update
             data.push_back(target_cells[c]->vertices[i].z);
 
             glm::vec3 color;
-            if(target_cells[c]->samples[i] > 0.010)
+            if(target_cells[c]->samples[i] > isovalue)
                 color = glm::vec3(0.0f);
             else
                 color = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -85,31 +85,7 @@ GLuint Renderer::create_point_buffer(Cube** target_cells, int amount, int update
     return update;
 }
 
-void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
-    std::vector<GLfloat> data;
 
-    for(int c=0; c < num_cells; c++){
-        for(int i=0; i < 8; i++){
-            data.push_back(cells[c]->vertices[i].x);
-            data.push_back(cells[c]->vertices[i].y);
-            data.push_back(cells[c]->vertices[i].z);
-
-            glm::vec3 color;
-            if(cells[c]->samples[i] > isovalue)
-                color = glm::vec3(0.0f);
-            else
-                color = glm::vec3(0.0f, 1.0f, 0.0f);
-
-            data.push_back(color.x);
-            data.push_back(color.y);
-            data.push_back(color.z);
-        }
-    }
-
-   editBuf(data, buffer);
-    // update data size
-    sizes[buffer] = data.size();
-}
 
 
 /*
@@ -117,18 +93,18 @@ void Renderer::update_points_buffer(GLuint buffer, double isovalue) {
  */
 GLuint Renderer::create_grid_buffer(Cube** target_cells, int amount, int update) {
     std::vector<GLfloat> data;
-    for(int c =0; c < num_cells; c++){
+    for(int c =0; c < amount; c++){
         for(int e = 0; e < 12; e++){
-            data.push_back(cells[c]->vertices[edges[e][0]].x); // first vertex of edge
-            data.push_back(cells[c]->vertices[edges[e][0]].y);
-            data.push_back(cells[c]->vertices[edges[e][0]].z);
+            data.push_back(target_cells[c]->vertices[edges[e][0]].x); // first vertex of edge
+            data.push_back(target_cells[c]->vertices[edges[e][0]].y);
+            data.push_back(target_cells[c]->vertices[edges[e][0]].z);
 
             data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
 
-            data.push_back(cells[c]->vertices[edges[e][1]].x); // second vertex of edge
-            data.push_back(cells[c]->vertices[edges[e][1]].y);
-            data.push_back(cells[c]->vertices[edges[e][1]].z);
+            data.push_back(target_cells[c]->vertices[edges[e][1]].x); // second vertex of edge
+            data.push_back(target_cells[c]->vertices[edges[e][1]].y);
+            data.push_back(target_cells[c]->vertices[edges[e][1]].z);
 
             data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
 
@@ -154,31 +130,6 @@ GLuint Renderer::create_grid_buffer(Cube** target_cells, int amount, int update)
 
 }
 
-
-void Renderer::update_grid_buffer(GLuint buffer, double isovalue) {
-    std::vector<GLfloat> data;
-    for(int c =0; c < num_cells; c++){
-        for(int e = 0; e < 12; e++){
-            data.push_back(cells[c]->vertices[edges[e][0]].x); // first vertex of edge
-            data.push_back(cells[c]->vertices[edges[e][0]].y);
-            data.push_back(cells[c]->vertices[edges[e][0]].z);
-
-            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
-
-
-            data.push_back(cells[c]->vertices[edges[e][1]].x); // second vertex of edge
-            data.push_back(cells[c]->vertices[edges[e][1]].y);
-            data.push_back(cells[c]->vertices[edges[e][1]].z);
-
-            data.push_back(0.878f); data.push_back(0.623f); data.push_back(0.678f); // color
-
-        }
-    }
-
-    editBuf(data, buffer);
-    // update data size
-    sizes[buffer] = data.size();
-}
 
 
 
@@ -206,10 +157,9 @@ GLuint Renderer::create_tri_buffer(Cube** target_cells, int amount, bool manual_
         }
     }
 
-
     if(update == -1){
         GLuint loc = prepBuf(data, manual_size);
-        formatBuf(loc, 3, {0, 1});
+        formatBuf(loc, 3, {0, 2});
         // Save size
         sizes[loc] = data.size();
 
@@ -225,33 +175,7 @@ GLuint Renderer::create_tri_buffer(Cube** target_cells, int amount, bool manual_
     return update;
 }
 
-void Renderer::update_tri_buffer(GLuint buffer, double isovalue) {
 
-    std::vector<GLfloat> data;
-    for(int c=0; c < num_cells; c++){
-        for(int t=0; t < cells[c]->num_tris*3; t+=3){
-            // push vertices -> colors -> normals
-            // V0
-            data.push_back(cells[c]->tris[t].x); data.push_back(cells[c]->tris[t].y); data.push_back(cells[c]->tris[t].z);
-            data.push_back(cells[c]->normals[t].x); data.push_back(cells[c]->normals[t].y); data.push_back(cells[c]->normals[t].z);
-
-            // V1
-            data.push_back(cells[c]->tris[t+1].x); data.push_back(cells[c]->tris[t+1].y); data.push_back(cells[c]->tris[t+1].z);
-            data.push_back(cells[c]->normals[t+1].x); data.push_back(cells[c]->normals[t+1].y); data.push_back(cells[c]->normals[t+1].z);
-
-            // V2
-            data.push_back(cells[c]->tris[t+2].x); data.push_back(cells[c]->tris[t+2].y); data.push_back(cells[c]->tris[t+2].z);
-            data.push_back(cells[c]->normals[t+2].x); data.push_back(cells[c]->normals[t+2].y); data.push_back(cells[c]->normals[t+2].z);
-
-        }
-    }
-
-
-    editBuf(data, buffer);
-
-    sizes[buffer] = data.size();
-
-}
 
 
 
@@ -338,17 +262,48 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
         // Isovalue has been edited, regenerate mesh and update buffers
         if(g.isoChanging)
         {
+            // Free previous cells
             for(int i=0; i < num_cells; i++){
                 delete cells[i];
             }
             delete[] cells;
 
+            // Regenerate
             cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 1.0, mc_buffer, g.iso);
 
+            // Update buffers
             create_tri_buffer(cells, num_cells, false, tri_buffer);
         }
 
         renderTris(tri_buffer, false, glm::vec3(g.scale));
+    }
+
+    // Math-based mesh is active
+    if(g.math_active){
+        // Isovalue has been edited, regenerate mesh and update buffers
+        if(g.isoChanging)
+        {
+            // Free previous cells
+            for(int i=0; i < math_num_cells; i++){
+                delete math_cells[i];
+            }
+            delete[] math_cells;
+
+            // Regenerate
+            if(g.model == 0)
+                math_cells = generate_math_samples(20, sample_sphere, g.iso);
+            if(g.model == 1)
+                math_cells = generate_math_samples(20 , sample_bumps, g.iso);
+
+            // Update buffers
+            create_tri_buffer(math_cells, math_num_cells, false, math_tri_buffer);
+            create_point_buffer(math_cells, math_num_cells, g.iso, math_points_buffer);
+            create_grid_buffer(math_cells, math_num_cells, math_grid_buffer);
+        }
+
+        renderTris(math_tri_buffer, true, glm::vec3(g.scale));
+        renderPoints(math_points_buffer);
+        renderLines(math_grid_buffer);
     }
 
 
@@ -374,8 +329,6 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
         cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, g.iso, false);
         setCells(cells, (NX-1)*(NY-1)*(NZ-1));
 
-//        points_buffer = create_point_buffer();
-//        grid_buffer =  create_grid_buffer();
         tri_buffer = create_tri_buffer(cells, num_cells);
 
         // Reset
@@ -391,16 +344,18 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
 
     // Regenerating mathematical implicit functions
-//    if(g.sphere_btn || g.bumps_btn){
-//
-//        if(g.model == 0)
-//            new_cells = generate_samples(20, sample_sphere, g.iso);
-//        if(g.model == 1)
-//            new_cells = generate_samples(20 , sample_bumps, g.iso);
-//
-//        math_tri_buffer = create_tri_buffer(true);
-//        math_grid_buffer = create_grid_buffer();
-//    }
+    if(g.sphere_btn || g.bumps_btn){
+        math_num_cells = 20*20*20;
+        if(g.model == 0)
+            math_cells = generate_math_samples(20, sample_sphere, g.iso);
+        if(g.model == 1)
+            math_cells = generate_math_samples(20 , sample_bumps, g.iso);
+
+        math_tri_buffer = create_tri_buffer(math_cells, math_num_cells, true);
+        math_points_buffer = create_point_buffer(math_cells, math_num_cells, g.iso);
+        math_grid_buffer = create_grid_buffer(math_cells, math_num_cells);
+
+    }
 
     // Debug vertices controller
     for(int i=0; i < 8; i++){

@@ -18,27 +18,29 @@ public:
     ~Renderer() = default;
 
     GLuint enableAxis();
-    GLuint create_point_buffer(Cube** target_cells, int amount, int update=-1);
+    GLuint create_point_buffer(Cube** target_cells, int amount, double isovalue, int update=-1);
     GLuint create_grid_buffer(Cube** target_cells, int amount, int update=-1);
     GLuint create_tri_buffer(Cube** target_cells, int amount, bool manual_size=false, int update=-1);
 
 
-    void update_points_buffer(GLuint buffer, double isovalue);
-    void update_tri_buffer(GLuint buffer, double isovalue);
-    void update_grid_buffer(GLuint buffer, double isovalue);
+
 
 
     void renderGUI(Menu& g, GLuint debug_points_buffer,
                    GLuint debug_tri_buffer, GLuint debug_points_buffer2,
                    GLuint debug_tri_buffer2);
+    // Render primitives
     void renderAxis(GLuint buffer);
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
     void renderTris(GLuint buffer, bool debug_tris=false, glm::vec3 scale=glm::vec3(1.0f));
 
+    // Buffer allocation
     unsigned int prepBuf(GLfloat data[], GLuint size);
     unsigned int prepBuf(GLushort data[], GLuint size);
     unsigned int prepBuf(std::vector<GLfloat>& data, bool big);
+
+    // Edits existing buffer
     unsigned int editBuf(std::vector<GLfloat>& data, GLuint i);
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);

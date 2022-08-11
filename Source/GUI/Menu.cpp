@@ -39,9 +39,11 @@ void Menu::update() {
     sphere_btn = ImGui::Button("Sphere");    ImGui::SameLine();
     bumps_btn = ImGui::Button("Bumps");
     if(sphere_btn){
+        math_active = true;
         model = 0;
     }
     if(bumps_btn){
+        math_active = true;
         model = 1;
     }
 
