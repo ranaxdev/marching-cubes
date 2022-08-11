@@ -34,6 +34,7 @@ public:
     void renderPoints(GLuint buffer);
     void renderLines(GLuint buffer);
     void renderTris(GLuint buffer, bool debug_tris=false, glm::vec3 scale=glm::vec3(1.0f));
+    void renderTris2(GLuint buffer);
 
     // Buffer allocation
     unsigned int prepBuf(GLfloat data[], GLuint size);
@@ -90,11 +91,15 @@ private:
     // Shaders
     Shader shader_axis = Shader(SRC+"Shaders/vert.glsl", SRC+"Shaders/frag.glsl");
     Shader shader_phong = Shader(SRC+"Shaders/vert0.glsl", SRC+"Shaders/frag0.glsl");
+    Shader shader_light = Shader(SRC+"Shaders/vert1.glsl", SRC+"Shaders/frag1.glsl");
+
 
     // Colors
     glm::vec4 red = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
     glm::vec4 cyan = glm::vec4(0.0f, 1.0f, 1.0f, 1.0f);
 
+    // Other
+    glm::vec3 light_pos = glm::vec3(0.0f, 0.0f, 0.0f);
 
 };
 #endif

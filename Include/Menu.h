@@ -20,6 +20,7 @@ public:
     bool bumps_btn = false;
     bool output_file_btn = false;
     bool show_grid = false;
+    bool light_pos_changed = false;
 
 
     bool isoChanging = false;

@@ -2,7 +2,7 @@
 #include <iostream>
 
 Menu::Menu() {
-    Menu::size = ImVec2(360.0f, 640.0f);
+    Menu::size = ImVec2(360.0f, 720.0f);
     Menu::pos = ImVec2(SCREEN_W-size.x, 0.0f);
 
 
@@ -48,6 +48,11 @@ void Menu::update() {
     }
 
     ImGui::Checkbox("Show grid", &show_grid);
+
+    if(ImGui::Button("Place light")){
+        light_pos_changed = true;
+    }
+
     ImGui::NewLine();
 
     ImGui::InputFloat("Isovalue", &iso, 5.0f, 10.0f);

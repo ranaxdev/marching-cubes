@@ -43,8 +43,8 @@ GLuint Renderer::enableAxis() {
 
 
     return loc;
-
 }
+
 
 GLuint Renderer::create_point_buffer(Cube** target_cells, int amount, double isovalue, int update) {
     std::vector<GLfloat> data;
@@ -219,7 +219,21 @@ void Renderer::renderLines(GLuint buffer) {
     glDrawArrays(GL_LINES, 0, sizes[buffer]);
 
 }
+void Renderer::renderTris2(GLuint buffer){
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::translate(trans, light_pos);
+    trans = glm::scale(trans, glm::vec3(0.1f, 0.1f, 0.1f));
 
+    shader_light.bind();
+    shader_light.setMat4(20, qaiser::Harness::VP);
+    shader_light.setMat4(21, trans);
+
+    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // regular
+
+    glVertexArrayVertexBuffer(VAO, 0, buf[buffer], 0, strides[buffer]);
+    glDrawArrays(GL_TRIANGLES, 0, sizes[buffer]);
+
+}
 
 void Renderer::renderTris(GLuint buffer, bool debug_tris, glm::vec3 scale) {
 
@@ -231,6 +245,9 @@ void Renderer::renderTris(GLuint buffer, bool debug_tris, glm::vec3 scale) {
         shader_phong.setMat4(20, qaiser::Harness::VP);
         shader_phong.setMat4(21, trans);
         shader_phong.setVec3(22, qaiser::Harness::campos);
+
+        shader_phong.setVec3(23, light_pos);
+
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL ); // regular
     }
     else{ // debug tris
@@ -296,7 +313,7 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
                 math_cells = generate_math_samples(20 , sample_bumps, g.iso);
 
             // Update buffers
-            create_tri_buffer(math_cells, math_num_cells, false, math_tri_buffer);
+            create_tri_buffer(math_cells, math_num_cells, true, math_tri_buffer);
             create_point_buffer(math_cells, math_num_cells, g.iso, math_points_buffer);
             create_grid_buffer(math_cells, math_num_cells, math_grid_buffer);
         }
@@ -388,6 +405,12 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
             update_debug_tris(debug_tri_buffer2, debug_cell2);
         }
 
+    }
+
+    // Light position was updated
+    if(g.light_pos_changed){
+        light_pos = qaiser::Harness::campos;
+        g.light_pos_changed = false;
     }
 }
 
