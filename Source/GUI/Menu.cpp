@@ -43,6 +43,8 @@ void Menu::update() {
         model = 0;
     }
     if(bumps_btn){
+        std::cout << "bumps btn pressed" << std::endl;
+
         math_active = true;
         model = 1;
     }

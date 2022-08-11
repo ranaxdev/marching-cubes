@@ -274,6 +274,99 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
                          GLuint debug_tri_buffer2) {
     g.update();
 
+
+    // Loading NHDR header file requested
+    if(g.nhdr_loaded){
+
+        std::vector<int> dimensions = parse_nhdr_sizes(g.nhdr_filename.c_str());
+        NX = dimensions[0];
+        NY = dimensions[1];
+        NZ = dimensions[2];
+
+        // Reset
+        g.nhdr_filename = "";
+        g.nhdr_loaded = false;
+    }
+
+
+    // Loading NRRD file data into buffer and generating mesh
+    if(g.nrrd_loaded){
+        mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
+
+        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, g.iso, false);
+        setCells(cells, (NX-1)*(NY-1)*(NZ-1));
+
+        tri_buffer = create_tri_buffer(cells, num_cells);
+
+        std::cout << "data loaded" << std::endl;
+
+        // Reset
+        g.nrrd_filename = "";
+        g.nrrd_loaded = false;
+    }
+
+
+    // Triangle output file requested
+    if(g.output_file_btn){
+        output_triangles(cells, num_cells, std::string(SRC+"triangles.obj").c_str());
+    }
+
+
+    // Regenerating mathematical implicit functions
+    if(g.sphere_btn || g.bumps_btn){
+        math_num_cells = 10*10*10;
+
+        if(g.model == 0)
+            math_cells = generate_math_samples(10, sample_sphere, g.iso);
+        if(g.model == 1)
+            math_cells = generate_math_samples(10 , sample_bumps, g.iso);
+
+
+        math_tri_buffer = create_tri_buffer(math_cells, math_num_cells, true);
+        math_points_buffer = create_point_buffer(math_cells, math_num_cells, g.iso);
+        math_grid_buffer = create_grid_buffer(math_cells, math_num_cells);
+
+
+
+    }
+
+    // Debug vertices controller
+    for(int i=0; i < 8; i++){
+        if(g.debug_clicked[i])
+        {
+            if(*g.debug_vertices[i])
+                debug_cell->samples[i] = 9;
+            else
+                debug_cell->samples[i] = 11;
+
+            march_debug_cell(debug_cell, 10);
+
+            update_debug_points(debug_points_buffer, debug_cell);
+            update_debug_tris(debug_tri_buffer, debug_cell);
+        }
+
+        if(g.debug_clicked2[i])
+        {
+            if(*g.debug_vertices2[i])
+                debug_cell2->samples[i] = 9;
+            else
+                debug_cell2->samples[i] = 11;
+
+            march_debug_cell(debug_cell2, 10);
+
+            update_debug_points(debug_points_buffer2, debug_cell2);
+            update_debug_tris(debug_tri_buffer2, debug_cell2);
+        }
+
+    }
+
+    // Light position was updated
+    if(g.light_pos_changed){
+        light_pos = qaiser::Harness::campos;
+        g.light_pos_changed = false;
+    }
+
+
     // Data-based mesh is active
     if(g.mesh_active){
         // Isovalue has been edited, regenerate mesh and update buffers
@@ -326,92 +419,6 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
         }
     }
 
-
-
-    // Loading NHDR header file requested
-    if(g.nhdr_loaded){
-
-        std::vector<int> dimensions = parse_nhdr_sizes(g.nhdr_filename.c_str());
-        NX = dimensions[0];
-        NY = dimensions[1];
-        NZ = dimensions[2];
-
-        // Reset
-        g.nhdr_filename = "";
-        g.nhdr_loaded = false;
-    }
-
-
-    // Loading NRRD file data into buffer and generating mesh
-    if(g.nrrd_loaded){
-        mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
-
-        cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, g.iso, false);
-        setCells(cells, (NX-1)*(NY-1)*(NZ-1));
-
-        tri_buffer = create_tri_buffer(cells, num_cells);
-
-        // Reset
-        g.nrrd_filename = "";
-        g.nrrd_loaded = false;
-    }
-
-
-    // Triangle output file requested
-    if(g.output_file_btn){
-        output_triangles(cells, num_cells, std::string(SRC+"triangles.obj").c_str());
-    }
-
-
-    // Regenerating mathematical implicit functions
-    if(g.sphere_btn || g.bumps_btn){
-        math_num_cells = math_res*math_res*math_res;
-        if(g.model == 0)
-            math_cells = generate_math_samples(math_res, sample_sphere, g.iso);
-        if(g.model == 1)
-            math_cells = generate_math_samples(math_res , sample_bumps, g.iso);
-
-        math_tri_buffer = create_tri_buffer(math_cells, math_num_cells, true);
-        math_points_buffer = create_point_buffer(math_cells, math_num_cells, g.iso);
-        math_grid_buffer = create_grid_buffer(math_cells, math_num_cells);
-
-    }
-
-    // Debug vertices controller
-    for(int i=0; i < 8; i++){
-        if(g.debug_clicked[i])
-        {
-            if(*g.debug_vertices[i])
-                debug_cell->samples[i] = 9;
-            else
-                debug_cell->samples[i] = 11;
-
-            march_debug_cell(debug_cell, 10);
-
-            update_debug_points(debug_points_buffer, debug_cell);
-            update_debug_tris(debug_tri_buffer, debug_cell);
-        }
-
-        if(g.debug_clicked2[i])
-        {
-            if(*g.debug_vertices2[i])
-                debug_cell2->samples[i] = 9;
-            else
-                debug_cell2->samples[i] = 11;
-
-            march_debug_cell(debug_cell2, 10);
-
-            update_debug_points(debug_points_buffer2, debug_cell2);
-            update_debug_tris(debug_tri_buffer2, debug_cell2);
-        }
-
-    }
-
-    // Light position was updated
-    if(g.light_pos_changed){
-        light_pos = qaiser::Harness::campos;
-        g.light_pos_changed = false;
-    }
 }
 
 

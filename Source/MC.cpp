@@ -315,7 +315,7 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
  */
 Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue){
 
-    Cube** cubes = new Cube*[262144];
+    Cube** cubes = new Cube*[res*res*res];
 
     glm::vec3 grid_start = glm::vec3(-res/2, -res/2, -res/2);
 
@@ -328,14 +328,17 @@ Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue
 
                 Cube* cell = new Cube(cube_start, nullptr, nullptr, 0);
 
+
                 for(int i=0; i < 8; i++){
                     cell->vertices[i] = cube_start + baseVertices[i];
                     cell->samples[i] = func(cube_start + baseVertices[i]);
                 }
 
+
                 march_debug_cell(cell, isovalue);
 
                 cubes[idx] = cell;
+
             }
         }
     }
