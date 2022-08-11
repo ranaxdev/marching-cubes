@@ -298,7 +298,6 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
         tri_buffer = create_tri_buffer(cells, num_cells);
 
-        std::cout << "data loaded" << std::endl;
 
         // Reset
         g.nrrd_filename = "";

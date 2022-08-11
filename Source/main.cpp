@@ -56,8 +56,8 @@ public:
         menu = new Menu();
 
         // Light
-//        light_cells = generate_math_samples(20, sample_sphere, 2.0);
-//        light_tri_buffer = R->create_tri_buffer(light_cells, 20*20*20);
+        light_cells = generate_math_samples(20, sample_sphere, 2.0);
+        light_tri_buffer = R->create_tri_buffer(light_cells, 20*20*20);
 
         // Cell debugging sample
         R->enableDebug();
@@ -105,7 +105,7 @@ public:
         R->renderTris(debug_tri_buffer2, true);
 
         // Render light
-//        R->renderTris2(light_tri_buffer);
+        R->renderTris2(light_tri_buffer);
 
     }
 };
