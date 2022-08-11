@@ -41,6 +41,17 @@ static const std::uint32_t edges[12][2] =
         {0,4}, {1,5}, {2,6}, {3,7}
         };
 
+static const glm::vec3 baseVertices[8]=
+        {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 0.0f, 0.0f),
+        glm::vec3(1.0f, 1.0f, 0.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 1.0f),
+        glm::vec3(1.0f, 0.0f ,1.0f),
+        glm::vec3(1.0f ,1.0f ,1.0f),
+        glm::vec3(0.0f, 1.0f ,1.0f)
+        };
 
 
 Cube* generate_debug_sample(glm::vec3 pos);
@@ -54,9 +65,9 @@ void make_cube_index(int& cube_index, double* samples, double isovalue);
 glm::vec3 calc_normal(const Triangle& t);
 
 Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::vec3*** gradients, double isovalue, bool store_grid=true);
-void march_debug_cell(Cube* cell);
+void march_debug_cell(Cube* cell, double isovalue);
 Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, float grid_size, std::uint8_t*** sdf, double isovalue, bool store_grid=true);
-
+Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue);
 
 
 const static int edgeTable[256]={

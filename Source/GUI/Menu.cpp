@@ -45,6 +45,9 @@ void Menu::update() {
         model = 1;
     }
 
+    ImGui::Checkbox("Show grid", &show_grid);
+    ImGui::NewLine();
+
     ImGui::InputFloat("Isovalue", &iso, 5.0f, 10.0f);
 
     ImGui::NewLine();

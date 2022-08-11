@@ -11,9 +11,9 @@ Cube::Cube(glm::vec3 start, glm::vec3 *tris, glm::vec3* normals, int num_tris)
 
 
 
-/* Sampling implicit functions */
+/* Sampling mathematical implicit functions */
 double sample_sphere(glm::vec3 position) {
-    return std::sqrt(std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2)) - 5;
+    return std::sqrt(std::pow(position.x,2) + std::pow(position.y, 2) + std::pow(position.z, 2)) - 1;
 
 }
 
@@ -285,7 +285,6 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
 
     Cube** cubes = new Cube*[resX*resY*resZ];
 
-    int res = resX*resY*resZ;
     // March each cube
     float cube_length = grid_size /2;
     for(int x =0; x < resX; x++){
@@ -296,7 +295,6 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
                 glm::vec3 cube_start = glm::vec3(x,y,z) + grid_start;
 
                 cubes[idx] = march(cube_start, cube_length, sdf, gradients, isovalue);
-
             }
         }
     }
@@ -309,6 +307,42 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
 
 
 
+
+
+
+/*
+ * Routine to generate a res^3 marching cubes grid, sample the points mathematically and march each cell
+ */
+Cube** generate_math_samples(int res, double (*func)(glm::vec3), double isovalue){
+
+    Cube** cubes = new Cube*[262144];
+
+    glm::vec3 grid_start = glm::vec3(-32.0f, -32.0f, -32.0f);
+
+    for(int x =0; x < res; x++){
+        for(int y =0; y < res; y++){
+            for(int z =0; z < res; z++){
+                int idx = x + res * (y + res * z); // flatten 3d array index
+
+                glm::vec3 cube_start = glm::vec3(x,y,z) + grid_start;
+
+                Cube* cell = new Cube(cube_start, nullptr, nullptr, 0);
+
+                for(int i=0; i < 8; i++){
+                    cell->vertices[i] = cube_start + baseVertices[i];
+                    cell->samples[i] = func(cube_start + baseVertices[i]);
+                }
+
+                march_debug_cell(cell, isovalue);
+
+                cubes[idx] = cell;
+            }
+        }
+    }
+
+    return cubes;
+
+}
 
 
 
@@ -358,14 +392,14 @@ Cube* generate_debug_sample(glm::vec3 pos){
     }
 
 
-    march_debug_cell(cell);
+    march_debug_cell(cell, 10);
 
     return cell;
 
 }
 
 
-void march_debug_cell(Cube* cell){
+void march_debug_cell(Cube* cell, double isovalue){
 
     // Clean-up previous data if it has
     if(cell->tris != nullptr){
@@ -379,21 +413,21 @@ void march_debug_cell(Cube* cell){
 
 
     int cube_index = 0;
-    if(cell->samples[0] < 10)
+    if(cell->samples[0] < isovalue)
         cube_index |= 1;
-    if(cell->samples[1] < 10)
+    if(cell->samples[1] < isovalue)
         cube_index |= 2;
-    if(cell->samples[2] < 10)
+    if(cell->samples[2] < isovalue)
         cube_index |= 4;
-    if(cell->samples[3] < 10)
+    if(cell->samples[3] < isovalue)
         cube_index |= 8;
-    if(cell->samples[4] < 10)
+    if(cell->samples[4] < isovalue)
         cube_index |= 16;
-    if(cell->samples[5] < 10)
+    if(cell->samples[5] < isovalue)
         cube_index |= 32;
-    if(cell->samples[6] < 10)
+    if(cell->samples[6] < isovalue)
         cube_index |= 64;
-    if(cell->samples[7] < 10)
+    if(cell->samples[7] < isovalue)
         cube_index |= 128;
 
 
@@ -410,7 +444,6 @@ void march_debug_cell(Cube* cell){
     }
 
     glm::vec3 t_v[12]; // triangle vertices
-    double isovalue = 10.0;
     if(edgeTable[cube_index] & 1)
         t_v[0] = vertex_lerp(cell->vertices[0], cell->vertices[1], cell->samples[0], cell->samples[1], isovalue);
     if(edgeTable[cube_index] & 2)

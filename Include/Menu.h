@@ -19,6 +19,7 @@ public:
     bool sphere_btn = false;
     bool bumps_btn = false;
     bool output_file_btn = false;
+    bool show_grid = false;
 
 
     bool isoChanging = false;

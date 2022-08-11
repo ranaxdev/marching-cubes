@@ -18,9 +18,9 @@ public:
     ~Renderer() = default;
 
     GLuint enableAxis();
-    GLuint create_point_buffer();
-    GLuint create_grid_buffer();
-    GLuint create_tri_buffer();
+    GLuint create_point_buffer(Cube** target_cells, int amount, int update=-1);
+    GLuint create_grid_buffer(Cube** target_cells, int amount, int update=-1);
+    GLuint create_tri_buffer(Cube** target_cells, int amount, bool manual_size=false, int update=-1);
 
 
     void update_points_buffer(GLuint buffer, double isovalue);
@@ -67,15 +67,21 @@ private:
     std::vector<GLsizei> sizes;
 
     // Marching cubes data
+    // Main (sampled data from files)
     int NX, NY, NZ;
-    GLuint points_buffer, grid_buffer, tri_buffer;
+    GLuint points_buffer, grid_buffer, tri_buffer; // main buffers
     Cube** cells;
     std::uint8_t*** mc_buffer;
     int num_cells;
 
+    // Secondary (math implicit functions)
+    GLuint math_points_buffer, math_grid_buffer, math_tri_buffer; // live f(x,y,z) generated function buffers
+    Cube** math_cells;
+    int math_num_cells;
+
+    // Debug cells
     Cube* debug_cell;
     Cube* debug_cell2;
-
     bool debug = false;
 
     // Shaders
