@@ -17,14 +17,16 @@ double sample_sphere(glm::vec3 position) {
 
 }
 
-
 double sample_bumps(glm::vec3 position){
     return 20* (cos(position.x) + cos(position.y) + cos(position.z));
 }
 
-double sample_surf(glm::vec3 position){
-    return std::pow(3* position.x, 4) + std::pow(3*position.y, 4) + std::pow(3*position.z,4)-
-    (45 * std::pow(position.x, 2)) - (45 * std::pow(position.y, 2)) - (45 * std::pow(position.z, 2));
+double sample_torus(glm::vec3 position){
+    return std::pow(std::sqrt(std::pow(position.x,2) + std::pow(position.z, 2)) - 4, 2) + std::pow(position.y, 2);
+}
+
+double sample_bowl(glm::vec3 position){
+    return std::pow(position.x,2) + std::pow(position.z, 2) - position.y;
 }
 
 
@@ -50,17 +52,6 @@ glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sam
 
 
     return pos;
-}
-
-glm::vec3 calc_normal(glm::vec3 v0, glm::vec3 v1, glm::vec3 v2){
-    glm::vec3 normal;
-
-    glm::vec3 n_v0 = v1 - v0;
-    glm::vec3 n_v1 = v2 - v0;
-
-    normal = glm::cross(v0, v1);
-//    normal = glm::normalize(normal);
-    return normal;
 }
 
 
@@ -473,7 +464,7 @@ void march_debug_cell(Cube* cell, double isovalue){
         cell->tris[i + 1] = t_v[triTable[cube_index][i + 1]];
         cell->tris[i + 2] = t_v[triTable[cube_index][i + 2]];
 
-        glm::vec3 normal = glm::cross(cell->tris[i+1]-cell->tris[i], cell->tris[i+2]-cell->tris[i]);
+        glm::vec3 normal = glm::vec3(-1.0f) * glm::cross(cell->tris[i+1]-cell->tris[i], cell->tris[i+2]-cell->tris[i]);
         cell->normals[i] = normal;
         cell->normals[i+1] = normal;
         cell->normals[i+2] = normal;

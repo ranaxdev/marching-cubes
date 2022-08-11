@@ -57,7 +57,8 @@ static const glm::vec3 baseVertices[8]=
 
 double sample_sphere(glm::vec3 position);
 double sample_bumps(glm::vec3 position);
-double sample_surf(glm::vec3 position);
+double sample_torus(glm::vec3 position);
+double sample_bowl(glm::vec3 position);
 
 glm::vec3 vertex_lerp(glm::vec3 pos1, glm::vec3 pos2, double sample1, double sample2, double isovalue);
 void make_cube_index(int& cube_index, double* samples, double isovalue);

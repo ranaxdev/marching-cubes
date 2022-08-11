@@ -18,8 +18,12 @@ public:
     int model = 0;
     bool sphere_btn = false;
     bool bumps_btn = false;
+    bool torus_btn = false;
+    bool bowl_btn = false;
+
     bool output_file_btn = false;
     bool show_grid = false;
+    bool render_faces = false;
     bool light_pos_changed = false;
 
 

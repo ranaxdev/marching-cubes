@@ -312,13 +312,17 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
 
     // Regenerating mathematical implicit functions
-    if(g.sphere_btn || g.bumps_btn){
+    if(g.sphere_btn || g.bumps_btn || g.torus_btn || g.bowl_btn){
         math_num_cells = 10*10*10;
 
         if(g.model == 0)
             math_cells = generate_math_samples(10, sample_sphere, g.iso);
         if(g.model == 1)
             math_cells = generate_math_samples(10 , sample_bumps, g.iso);
+        if(g.model == 2)
+            math_cells = generate_math_samples(10, sample_torus, g.iso);
+        if(g.model == 3)
+            math_cells = generate_math_samples(10, sample_bowl, g.iso);
 
 
         math_tri_buffer = create_tri_buffer(math_cells, math_num_cells, true);
@@ -400,9 +404,15 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
             // Regenerate
             if(g.model == 0)
-                math_cells = generate_math_samples(20, sample_sphere, g.iso);
+                math_cells = generate_math_samples(10, sample_sphere, g.iso);
             if(g.model == 1)
-                math_cells = generate_math_samples(20 , sample_bumps, g.iso);
+                math_cells = generate_math_samples(10 , sample_bumps, g.iso);
+            if(g.model == 2)
+                math_cells = generate_math_samples(10, sample_torus, g.iso);
+            if(g.model == 3)
+                math_cells = generate_math_samples(10, sample_bowl, g.iso);
+
+
 
             // Update buffers
             create_tri_buffer(math_cells, math_num_cells, true, math_tri_buffer);
@@ -410,7 +420,8 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
             create_grid_buffer(math_cells, math_num_cells, math_grid_buffer);
         }
 
-        renderTris(math_tri_buffer, true, glm::vec3(g.scale));
+
+        renderTris(math_tri_buffer, !g.render_faces, glm::vec3(g.scale));
 
         if(g.show_grid){
             renderPoints(math_points_buffer);

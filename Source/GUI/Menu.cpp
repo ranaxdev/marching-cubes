@@ -37,7 +37,10 @@ void Menu::update() {
 
 
     sphere_btn = ImGui::Button("Sphere");    ImGui::SameLine();
-    bumps_btn = ImGui::Button("Bumps");
+    bumps_btn = ImGui::Button("Bumps");     ImGui::SameLine();
+    torus_btn = ImGui::Button("Torus");     ImGui::SameLine();
+    bowl_btn = ImGui::Button("Bowl");
+
     if(sphere_btn){
         math_active = true;
         model = 0;
@@ -46,8 +49,20 @@ void Menu::update() {
         math_active = true;
         model = 1;
     }
+    if(torus_btn){
+        math_active = true;
+        model = 2;
+    }
+    if(bowl_btn){
+        math_active = true;
+        model = 3;
+    }
+
+
 
     ImGui::Checkbox("Show grid", &show_grid);
+    ImGui::Checkbox("Render faces", &render_faces);
+
 
     if(ImGui::Button("Place light")){
         light_pos_changed = true;
