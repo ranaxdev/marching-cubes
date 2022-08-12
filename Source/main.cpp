@@ -25,6 +25,9 @@
 using namespace qaiser;
 class App : public qaiser::Harness{
 public:
+    const char* header_path;
+    const char* raw_data_path;
+
     std::shared_ptr<Camera> camera = std::make_shared<Camera>();
     Menu* menu;
 
@@ -54,6 +57,7 @@ public:
     void startup() override {
         // Init GUI
         menu = new Menu();
+        R->setPaths(header_path, raw_data_path);
 
         // Light
         light_cells = generate_math_samples(20, sample_sphere, 2.0);
@@ -88,6 +92,7 @@ public:
         V = camera->getView();
         campos = camera->getCamPos();
 
+
         // GUI
         R->renderGUI(*menu, debug_points_buffer, debug_tri_buffer, debug_points_buffer2, debug_tri_buffer2);
 
@@ -112,9 +117,21 @@ public:
 
 
 #if !DEBUG
-int main(){
+int main(int argc, char** argv){
+
+    // argv[1] = NHDR header path
+    // argv[2] = raw data file path
+    if(argc != 3){
+        std::cout << "Usage: " <<  "[NHDR header file path]" << " [raw data file path]" << std::endl;
+        return 0;
+    }
+
+
     qaiser::Window window = qaiser::Window(1920, 1080, "Marching Cubes", 1.0f, 1.0f, 0.9f);
     App* a = new App;
+    a->header_path = argv[1];
+    a->raw_data_path = argv[2];
+
     a->setWindow(window);
     a->run(a);
 

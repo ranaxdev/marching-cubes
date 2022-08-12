@@ -92,36 +92,16 @@ void Menu::update() {
 
     // NHDR header load file dialog & Button
     if(ImGui::Button("Load NHDR")){
-        load_nhdr_dialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".nhdr", ".");
+        nhdr_loaded = true;
     }
-    if (load_nhdr_dialog.Display("ChooseFileDlgKey"))
-    {
-        // OK clicked on file
-        if (load_nhdr_dialog.IsOk())
-        {
-            nhdr_filename = load_nhdr_dialog.GetFilePathName();
-            nhdr_loaded = true;
-        }
-        // close dialog after loading it in
-        load_nhdr_dialog.Close();
-    }
+
     ImGui::SameLine();
     // NRRD data load file dialog & Button
     if(ImGui::Button("Load Data")){
-        load_nrrd_dialog.OpenDialog("ChooseFileDlgKey", "Choose File", ".raw", ".");
+        nrrd_loaded = true;
+        mesh_active = true;
     }
-    if (load_nrrd_dialog.Display("ChooseFileDlgKey"))
-    {
-        // OK clicked on file
-        if (load_nrrd_dialog.IsOk())
-        {
-            nrrd_filename = load_nrrd_dialog.GetFilePathName();
-            nrrd_loaded = true;
-            mesh_active = true;
-        }
-        // close dialog after loading it in
-        load_nrrd_dialog.Close();
-    }
+
 
 
 

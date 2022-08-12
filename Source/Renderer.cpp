@@ -277,10 +277,12 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
     // Loading NHDR header file requested
     if(g.nhdr_loaded){
 
-        std::vector<int> dimensions = parse_nhdr_sizes(g.nhdr_filename.c_str());
+        std::vector<int> dimensions = parse_nhdr_sizes(header_path);
         NX = dimensions[0];
         NY = dimensions[1];
         NZ = dimensions[2];
+
+        std::cout << NX << " " << NY << " " << NZ << std::endl;
 
         // Reset
         g.nhdr_filename = "";
@@ -290,7 +292,7 @@ void Renderer::renderGUI(Menu &g, GLuint debug_points_buffer,
 
     // Loading NRRD file data into buffer and generating mesh
     if(g.nrrd_loaded){
-        mc_buffer = parse_nrrd_file(g.nrrd_filename.c_str(), NX, NY, NZ);
+        mc_buffer = parse_nrrd_file(data_path, NX, NY, NZ);
 
         cells = generate_samples(glm::vec3(0.0f), NX-1, NY-1, NZ-1, 2.0, mc_buffer, g.iso, false);
         setCells(cells, (NX-1)*(NY-1)*(NZ-1));
@@ -560,6 +562,11 @@ void Renderer::setCells(Cube** c, int num_cell) {
     num_cells = num_cell;
 }
 
+void Renderer::setPaths(const char *header, const char *data) {
+    header_path = header;
+    data_path = data;
+}
+
 
 
 
@@ -725,6 +732,7 @@ void Renderer::update_debug_tris(GLuint buffer, Cube* cell) {
 
     sizes[buffer] = data.size();
 }
+
 
 
 

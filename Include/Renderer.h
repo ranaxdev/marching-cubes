@@ -46,8 +46,9 @@ public:
 
     void formatBuf(GLuint loc, GLint comps_per_elem, std::vector<int> attribs);
 
+    // Set info
     void setCells(Cube** c, int num_cell);
-
+    void setPaths(const char* header, const char* data);
 
     // Debugging cell
     void setDebugCell(Cube* cell);
@@ -71,6 +72,7 @@ private:
 
     // Marching cubes data
     // Main (sampled data from files)
+    const char* header_path, *data_path;
     int NX, NY, NZ;
     GLuint points_buffer, grid_buffer, tri_buffer; // main buffers
     Cube** cells;

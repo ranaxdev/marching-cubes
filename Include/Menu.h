@@ -3,8 +3,6 @@
 
 #include "GUI.h"
 
-#include "ImGuiFileDialog.h"
-#include "ImGuiFileDialogConfig.h"
 
 class Menu : public GUI{
 public:
@@ -32,8 +30,6 @@ public:
     float scale = 1.0f;
     bool math_active = false;
 
-    ImGuiFileDialog load_nrrd_dialog;
-    ImGuiFileDialog load_nhdr_dialog;
     std::string nhdr_filename;
     std::string nrrd_filename;
     bool nhdr_loaded = false;

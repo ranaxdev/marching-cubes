@@ -4,7 +4,7 @@
 #include <string>
 
 #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
-#define SRC std::string(std::getenv("MC_PATH"))
+#define SRC std::string("../")
 #define DUMP_LOC SRC+"/Out/"
 
 // Font paths
