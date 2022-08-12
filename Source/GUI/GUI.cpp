@@ -17,7 +17,7 @@ void GUI::removeFlags(std::vector<ImGuiWindowFlags_>&& flags) {
     std::sort(flags.begin(), flags.end());
     GUI::flag_list.erase(
             std::remove_if(GUI::flag_list.begin(), GUI::flag_list.end(),
-                           [&](auto x){return std::binary_search(flags.begin(), flags.end(),x);})
+                           [&](ImGuiWindowFlags_ x){return std::binary_search(flags.begin(), flags.end(),x);})
                            , GUI::flag_list.end());
 
     GUI::updateFlags();
