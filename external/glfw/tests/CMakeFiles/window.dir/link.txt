@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/window.dir/window.c.o CMakeFiles/window.dir/__/deps/glad_gl.c.o -o window  ../src/libglfw3.a -lm /usr/lib/librt.a -lm -ldl 

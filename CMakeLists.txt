@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 2.8)
 project(MarchingCubes)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -14,9 +14,12 @@ set(IMGUI_SOURCE_FILES
         external/imgui/imgui_tables.cpp
         external/imgui/imgui_widgets.cpp)
 
+
+set(GLFW_DIR external/glfw)
+add_subdirectory(${GLFW_DIR})
+
 set(GLAD_SOURCE_FILES external/glad/glad.c Include/Menu.h Source/GUI/Menu.cpp Include/MC.h Source/MC.cpp Include/Util.h Source/Utils/Util.cpp)
 
-add_subdirectory(external/glfw)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCE_FILES} ${GLAD_SOURCE_FILES})
 
