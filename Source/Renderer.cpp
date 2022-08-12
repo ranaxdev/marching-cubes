@@ -1,6 +1,5 @@
 #include <string>
 #include <iostream>
-#include "Logger.h"
 #include "Harness.h"
 #include "Renderer.h"
 
@@ -507,7 +506,6 @@ unsigned int Renderer::editBuf(std::vector<GLfloat>& data, GLuint i) {
     // Buffer overflowed
     if(dat_size >= TEN_MB){
         std::cout << dat_size << " / " << TEN_MB << std::endl;
-        Logger::log(ERROR, "Buffer overflowed, buffer ID: "+ std::to_string(i), __FILENAME__);
     }
 
     // Unmap previous data to null

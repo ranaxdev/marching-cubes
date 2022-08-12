@@ -3,7 +3,7 @@ project(MarchingCubes)
 
 set(CMAKE_CXX_STANDARD 14)
 
-set(SOURCE_FILES Include/dirent.h Include/ImGuiFileDialogConfig.h Include/ImGuiFileDialog.h Source/Utils/ImGuiFileDialog.cpp Source/main.cpp Source/Harness.cpp Include/Harness.h Source/Shader.cpp Include/Shader.h Source/Camera.cpp Include/Camera.h Include/KeyListener.h Source/Utils/Logger.cpp Include/Logger.h Include/Globals.h Source/Renderer.cpp Include/Renderer.h Source/GUI/GUI.cpp Include/GUI.h Source/Utils/KeyListener.cpp)
+set(SOURCE_FILES Include/dirent.h Include/ImGuiFileDialogConfig.h Include/ImGuiFileDialog.h Source/Utils/ImGuiFileDialog.cpp Source/main.cpp Source/Harness.cpp Include/Harness.h Source/Shader.cpp Include/Shader.h Source/Camera.cpp Include/Camera.h Include/KeyListener.h Include/Globals.h Source/Renderer.cpp Include/Renderer.h Source/GUI/GUI.cpp Include/GUI.h Source/Utils/KeyListener.cpp)
 
 set(IMGUI_SOURCE_FILES
         external/imgui/imgui.cpp
@@ -15,12 +15,10 @@ set(IMGUI_SOURCE_FILES
         external/imgui/imgui_widgets.cpp)
 
 
-#set(GLFW_DIR external/glfw/build)
-#add_subdirectory(${GLFW_DIR})
+
 
 set(glfw_DIR external/glfw/glfw-3.2.1)
 add_subdirectory(${glfw_DIR})
-#find_package(glfw3 REQUIRED)
 
 set(GLAD_SOURCE_FILES external/glad/glad.c Include/Menu.h Source/GUI/Menu.cpp Include/MC.h Source/MC.cpp Include/Util.h Source/Utils/Util.cpp)
 

@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "Logger.h"
+
 #include "Globals.h"
 #include "Shader.h"
 
@@ -31,7 +31,6 @@ Shader::Shader(std::string&& vshader_path, std::string&& fshader_path) {
         fshader_src = fshader_stream.str();
     } catch (std::ifstream::failure& e){
         // Log error msg
-        Logger::log(ERROR, "File could not be opened", __FILENAME__);
         std::cout << e.what() << std::endl;
     }
 
@@ -93,8 +92,6 @@ void Shader::compile_error_checking(GLuint shader) {
     if(!success){
         glGetShaderInfoLog(shader, 1024, nullptr, info_log);
         // Log compilation errors
-        Logger::log(ERROR, "Shader compilation error", __FILENAME__);
-        Logger::log(INFO, info_log, __FILENAME__);
     }
 }
 
@@ -107,9 +104,6 @@ void Shader::link_error_checking(GLuint program) {
 
     if(!success){
         glGetProgramInfoLog(program, 1024, nullptr, info_log);
-        // Log linking errors
-        Logger::log(ERROR, "Shader linking error (program #"+std::to_string(program)+")", __FILENAME__);
-        Logger::log(INFO, info_log, __FILENAME__);
     }
 }
 

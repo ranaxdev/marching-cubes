@@ -100,9 +100,9 @@ public:
         R->renderTris(debug_tri_buffer, true);
 
         // Debug sample
-//        R->renderPoints(debug_points_buffer2);
-//        R->renderLines(debug_grid_buffer2);
-//        R->renderTris(debug_tri_buffer2, true);
+        R->renderPoints(debug_points_buffer2);
+        R->renderLines(debug_grid_buffer2);
+        R->renderTris(debug_tri_buffer2, true);
 
         // Render light
         R->renderTris2(light_tri_buffer);

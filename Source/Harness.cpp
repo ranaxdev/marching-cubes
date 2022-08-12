@@ -2,7 +2,6 @@
 #include <algorithm>
 
 #include "Globals.h"
-#include "Logger.h"
 #include "Harness.h"
 
 /**************************************************************************
@@ -13,8 +12,6 @@ glm::mat4 qaiser::Harness::V = glm::mat4(1.0f);
 glm::vec3 qaiser::Harness::campos = glm::vec3(0.0f);
 float delta;
 qaiser::Harness::~Harness() {
-    // Dump log file
-    Logger::dump();
 }
 
 void qaiser::Harness::run(qaiser::Harness* h) {
@@ -27,7 +24,6 @@ void qaiser::Harness::run(qaiser::Harness* h) {
     // GLFW window
     window = glfwCreateWindow(w.width, w.height, w.title, nullptr, nullptr);
     if(window == nullptr){
-        Logger::log(ERROR, "Could not create GLFW window", __FILENAME__);
         glfwTerminate();
     }
     // Window settings
@@ -41,7 +37,6 @@ void qaiser::Harness::run(qaiser::Harness* h) {
 
     // Load GLAD
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        Logger::log(ERROR, "Could not load GLAD", __FILENAME__);
         glfwTerminate();
     }
 

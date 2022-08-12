@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include "Logger.h"
 #include "KeyListener.h"
 #include "Globals.h"
 
