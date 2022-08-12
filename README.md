@@ -44,4 +44,6 @@ make
 ```
 
 # NOTE
-File dialog window system was removed to make implementation compatible with feng
+File dialog window system was removed, now you have to pass the NHDR header file and raw data file paths into the program like
+
+`./Marching-Cubes [header file path] [raw data file path]`

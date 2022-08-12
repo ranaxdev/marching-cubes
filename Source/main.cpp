@@ -115,7 +115,6 @@ public:
     }
 };
 
-#define DEBUG 1
 
 #if !DEBUG
 int main(int argc, char** argv){
@@ -144,42 +143,8 @@ int main(int argc, char** argv){
 
 #else
 
-void error_callback( int error, const char *msg ) {
-    std::string s;
-    s = " [" + std::to_string(error) + "] " + msg + '\n';
-    std::cerr << s << std::endl;
-}
 
 int main(){
-    glfwSetErrorCallback( error_callback );
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    // GLFW window
-    GLFWwindow* window = glfwCreateWindow(640, 480, "testing", nullptr, nullptr);
-    if(window == nullptr){
-        glfwTerminate();
-    }
-    // Window settings
-    glfwMakeContextCurrent(window);
-
-    // Load GLAD
-    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        glfwTerminate();
-    }
-
-
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable( GL_BLEND );
-    glViewport(0,0,640,480);
-
-    while(!glfwWindowShouldClose(window)){
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
 }
 #endif
