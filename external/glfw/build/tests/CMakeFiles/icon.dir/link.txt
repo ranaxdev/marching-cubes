@@ -1,1 +1,0 @@
-/bin/cc CMakeFiles/icon.dir/icon.c.o CMakeFiles/icon.dir/__/deps/glad_gl.c.o -o icon  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

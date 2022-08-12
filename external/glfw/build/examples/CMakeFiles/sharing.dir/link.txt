@@ -1,1 +1,0 @@
-/bin/cc CMakeFiles/sharing.dir/sharing.c.o CMakeFiles/sharing.dir/__/deps/glad_gl.c.o -o sharing  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

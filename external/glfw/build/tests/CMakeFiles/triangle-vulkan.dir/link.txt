@@ -1,1 +1,0 @@
-/bin/cc "CMakeFiles/triangle-vulkan.dir/triangle-vulkan.c.o" "CMakeFiles/triangle-vulkan.dir/__/deps/glad_vulkan.c.o" -o triangle-vulkan  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 
