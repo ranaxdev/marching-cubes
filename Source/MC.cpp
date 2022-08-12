@@ -205,7 +205,7 @@ Cube* march(glm::vec3 cube_start, float cube_length, std::uint8_t*** sdf, glm::v
         triangle_points[i + 2] = t_v[triTable[cube_index][i + 2]];
 
         // Calculate face normal (without gradients)
-//        glm::vec3 normal = glm::cross(triangle_points[i+1]-triangle_points[i], triangle_points[i+2]-triangle_points[i]);
+//        glm::vec3 normal = glm::cross(triangle_points[i+1]-triangle_points[i], triangle_points[i+2]-triangle_points[i]) * -1.0f;
 //        triangle_normals[i] = normal;
 //        triangle_normals[i+1] = normal;
 //        triangle_normals[i+2] = normal;
@@ -245,7 +245,7 @@ Cube** generate_samples(glm::vec3 grid_start, int resX, int resY, int resZ, floa
         }
     }
 
-    // Calculate gradients at each point in space using central differencing
+    // Calculate gradients at each point in space using central differences
     glm::vec3 p_x1, p_x2, p_y1, p_y2, p_z1, p_z2;
     float grad_x, grad_y, grad_z;
 
@@ -464,10 +464,10 @@ void march_debug_cell(Cube* cell, double isovalue){
         cell->tris[i + 1] = t_v[triTable[cube_index][i + 1]];
         cell->tris[i + 2] = t_v[triTable[cube_index][i + 2]];
 
-        glm::vec3 normal = glm::vec3(-1.0f) * glm::cross(cell->tris[i+1]-cell->tris[i], cell->tris[i+2]-cell->tris[i]);
-        cell->normals[i] = normal;
-        cell->normals[i+1] = normal;
-        cell->normals[i+2] = normal;
+        glm::vec3 normal = glm::cross(cell->tris[i+1]-cell->tris[i], cell->tris[i+2]-cell->tris[i]);
+        cell->normals[i] = normal * -1.0f;
+        cell->normals[i+1] = normal * -1.0f;
+        cell->normals[i+2] = normal * -1.0f;
 
     }
 }

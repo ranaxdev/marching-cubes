@@ -7,6 +7,11 @@
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+/*
+ * MC Tables adapted from http://paulbourke.net/geometry/polygonise/
+ */
+
+
 
 /*
  * A single marching cube cell
