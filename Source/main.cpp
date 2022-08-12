@@ -115,7 +115,7 @@ public:
     }
 };
 
-#define DEBUG
+#define DEBUG 1
 
 #if !DEBUG
 int main(int argc, char** argv){
@@ -143,10 +143,18 @@ int main(int argc, char** argv){
 
 
 #else
+
+void error_callback( int error, const char *msg ) {
+    std::string s;
+    s = " [" + std::to_string(error) + "] " + msg + '\n';
+    std::cerr << s << std::endl;
+}
+
 int main(){
+    glfwSetErrorCallback( error_callback );
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // GLFW window
