@@ -67,7 +67,7 @@ SOFTWARE.
 	#include <sys/types.h>
 	// this option need c++17
 	#ifndef USE_STD_FILESYSTEM
-		#include <dirent.h> 
+		#include <dirent.h>
 	#endif // USE_STD_FILESYSTEM
 	#define PATH_SEP '/'
 #endif // defined(__linux__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__APPLE__)
