@@ -3,6 +3,8 @@
 - Download sample data (NRRD header and raw data file)
 http://klacansky.com/open-scivis-datasets/
 
+- Run program with header file path and raw data file path
+
 - Enter isovalue
 
 - Load NHDR first, load data next to generate isosurface
@@ -38,5 +40,8 @@ mkdir build
 cd build
 cmake ../
 make
-./Marching-Cubes
+./Marching-Cubes [header file path] [raw data file path]
 ```
+
+# NOTE
+File dialog window system was removed to make implementation compatible with feng

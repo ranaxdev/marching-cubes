@@ -17,8 +17,8 @@ qaiser::Harness::~Harness() {
 void qaiser::Harness::run(qaiser::Harness* h) {
     // GLFW init
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // GLFW window
@@ -29,6 +29,7 @@ void qaiser::Harness::run(qaiser::Harness* h) {
     // Window settings
     glfwMakeContextCurrent(window);
     glfwSetWindowUserPointer(window, (void*)(this)); // Pointer to app window that implements this harness
+
     // GLFW settings
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
