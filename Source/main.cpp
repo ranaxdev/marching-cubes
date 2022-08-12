@@ -115,6 +115,7 @@ public:
     }
 };
 
+#define DEBUG
 
 #if !DEBUG
 int main(int argc, char** argv){
@@ -142,5 +143,35 @@ int main(int argc, char** argv){
 
 
 #else
-// empty
+int main(){
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    // GLFW window
+    GLFWwindow* window = glfwCreateWindow(640, 480, "testing", nullptr, nullptr);
+    if(window == nullptr){
+        glfwTerminate();
+    }
+    // Window settings
+    glfwMakeContextCurrent(window);
+
+    // Load GLAD
+    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+        glfwTerminate();
+    }
+
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable( GL_BLEND );
+    glViewport(0,0,640,480);
+
+    while(!glfwWindowShouldClose(window)){
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+}
 #endif
