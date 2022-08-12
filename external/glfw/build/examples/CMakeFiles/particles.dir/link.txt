@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/particles.dir/particles.c.o CMakeFiles/particles.dir/__/deps/tinycthread.c.o CMakeFiles/particles.dir/__/deps/getopt.c.o CMakeFiles/particles.dir/__/deps/glad_gl.c.o -o particles  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm /usr/lib/librt.a 

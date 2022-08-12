@@ -15,8 +15,11 @@ set(IMGUI_SOURCE_FILES
         external/imgui/imgui_widgets.cpp)
 
 
-set(GLFW_DIR external/glfw)
-add_subdirectory(${GLFW_DIR})
+#set(GLFW_DIR external/glfw/build)
+#add_subdirectory(${GLFW_DIR})
+
+set(glfw_DIR external/glfw/build)
+find_package(glfw3 REQUIRED)
 
 set(GLAD_SOURCE_FILES external/glad/glad.c Include/Menu.h Source/GUI/Menu.cpp Include/MC.h Source/MC.cpp Include/Util.h Source/Utils/Util.cpp)
 
@@ -25,7 +28,7 @@ add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${IMGUI_SOURCE_FILES} ${GLAD_SOUR
 
 include_directories(Include)
 
-target_link_libraries(${PROJECT_NAME} glfw dl pthread)
+target_link_libraries(${PROJECT_NAME} glfw3 dl pthread)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
         "${PROJECT_SOURCE_DIR}/external/glfw/include")

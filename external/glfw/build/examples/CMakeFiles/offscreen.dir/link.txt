@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/offscreen.dir/offscreen.c.o CMakeFiles/offscreen.dir/__/deps/glad_gl.c.o -o offscreen  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

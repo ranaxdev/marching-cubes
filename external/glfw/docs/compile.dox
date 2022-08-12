@@ -68,8 +68,10 @@ install the `xorgproto` package.
 pkg install xorgproto
 @endcode
 
-On Cygwin the `xorgproto` package in the Devel section of the GUI installer will
-install the headers and other development related files for all of X11.
+On Cygwin the `libXcursor-devel`, `libXi-devel`, `libXinerama-devel`,
+`libXrandr-devel` and `libXrender-devel` packages in the Libs section of the GUI
+installer will install all the headers and other development related files GLFW
+requires for X11.
 
 Once you have the required depdendencies, move on to @ref compile_generate.
 
@@ -80,25 +82,25 @@ To compile GLFW for Wayland, you need to have the Wayland and xkbcommon
 development packages installed.  They are not needed to build or run programs
 that use GLFW.
 
-On Debian and derivates like Ubuntu and Linux Mint you will need the
-`libwayland-dev`, `libxkbcommon-dev` and `wayland-protocols` packages.
+On Debian and derivates like Ubuntu and Linux Mint you will need the `libwayland-dev`,
+`libxkbcommon-dev`, `wayland-protocols` and `extra-cmake-modules` packages.
 
 @code{.sh}
-sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols
+sudo apt install libwayland-dev libxkbcommon-dev wayland-protocols extra-cmake-modules
 @endcode
 
 On Fedora and derivatives like Red Hat you will need the `wayland-devel`,
-`libxkbcommon-devel` and `wayland-protocols-devel` packages.
+`libxkbcommon-devel`, `wayland-protocols-devel` and `extra-cmake-modules` packages.
 
 @code{.sh}
-sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel
+sudo dnf install wayland-devel libxkbcommon-devel wayland-protocols-devel extra-cmake-modules
 @endcode
 
-On FreeBSD you will need the `wayland`, `libxkbcommon` and `wayland-protocols`
-packages.
+On FreeBSD you will need the `wayland`, `libxkbcommon`, `wayland-protocols` and
+`kf5-extra-cmake-modules` packages.
 
 @code{.sh}
-pkg install wayland libxkbcommon wayland-protocols
+pkg install wayland libxkbcommon wayland-protocols kf5-extra-cmake-modules
 @endcode
 
 Once you have the required depdendencies, move on to @ref compile_generate.
@@ -239,28 +241,17 @@ cmake -S path/to/glfw -B path/to/build -D BUILD_SHARED_LIBS=ON
 @subsection compile_options_shared Shared CMake options
 
 @anchor BUILD_SHARED_LIBS
-__BUILD_SHARED_LIBS__ determines whether GLFW is built as a static library or as
-a DLL / shared library / dynamic library.  This is disabled by default,
-producing a static GLFW library.  This variable has no `GLFW_` prefix because it
-is defined by CMake.  If you want to change the library only for GLFW when it is
-part of a larger project, see @ref GLFW_LIBRARY_TYPE.
-
-@anchor GLFW_LIBRARY_TYPE
-__GLFW_LIBRARY_TYPE__ allows you to override @ref BUILD_SHARED_LIBS only for
-GLFW, without affecting other libraries in a larger project.  When set, the
-value of this option must be a valid CMake library type.  Set it to `STATIC` to
-build GLFW as a static library, `SHARED` to build it as a shared library
-/ dynamic library / DLL, or `OBJECT` to make GLFW a CMake object library.
+__BUILD_SHARED_LIBS__ determines whether GLFW is built as a static
+library or as a DLL / shared library / dynamic library.  This is disabled by
+default, producing a static GLFW library.
 
 @anchor GLFW_BUILD_EXAMPLES
 __GLFW_BUILD_EXAMPLES__ determines whether the GLFW examples are built
-along with the library.  This is enabled by default unless GLFW is being built
-as a sub-project of a larger CMake project.
+along with the library.
 
 @anchor GLFW_BUILD_TESTS
 __GLFW_BUILD_TESTS__ determines whether the GLFW test programs are
-built along with the library.  This is enabled by default unless GLFW is being
-built as a sub-project of a larger CMake project.
+built along with the library.
 
 @anchor GLFW_BUILD_DOCS
 __GLFW_BUILD_DOCS__ determines whether the GLFW documentation is built along

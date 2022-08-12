@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/events.dir/events.c.o CMakeFiles/events.dir/__/deps/getopt.c.o CMakeFiles/events.dir/__/deps/glad_gl.c.o -o events  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

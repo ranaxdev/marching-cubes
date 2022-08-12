@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 Win32 - www.glfw.org
+// GLFW 3.3 Win32 - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -40,7 +40,7 @@ static const GUID _glfw_GUID_DEVINTERFACE_HID =
 #if defined(_GLFW_USE_HYBRID_HPG) || defined(_GLFW_USE_OPTIMUS_HPG)
 
 #if defined(_GLFW_BUILD_DLL)
- #warning "These symbols must be exported by the executable and have no effect in a DLL"
+ #pragma message("These symbols must be exported by the executable and have no effect in a DLL")
 #endif
 
 // Executables (but not DLLs) exporting this symbol with this value will be
@@ -72,16 +72,15 @@ BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 //
 static GLFWbool loadLibraries(void)
 {
-    _glfw.win32.winmm.instance = LoadLibraryA("winmm.dll");
-    if (!_glfw.win32.winmm.instance)
+    if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                                GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                            (const WCHAR*) &_glfw,
+                            (HMODULE*) &_glfw.win32.instance))
     {
         _glfwInputErrorWin32(GLFW_PLATFORM_ERROR,
-                             "Win32: Failed to load winmm.dll");
+                             "Win32: Failed to retrieve own module handle");
         return GLFW_FALSE;
     }
-
-    _glfw.win32.winmm.GetTime = (PFN_timeGetTime)
-        GetProcAddress(_glfw.win32.winmm.instance, "timeGetTime");
 
     _glfw.win32.user32.instance = LoadLibraryA("user32.dll");
     if (!_glfw.win32.user32.instance)
@@ -103,6 +102,8 @@ static GLFWbool loadLibraries(void)
         GetProcAddress(_glfw.win32.user32.instance, "GetDpiForWindow");
     _glfw.win32.user32.AdjustWindowRectExForDpi_ = (PFN_AdjustWindowRectExForDpi)
         GetProcAddress(_glfw.win32.user32.instance, "AdjustWindowRectExForDpi");
+    _glfw.win32.user32.GetSystemMetricsForDpi_ = (PFN_GetSystemMetricsForDpi)
+        GetProcAddress(_glfw.win32.user32.instance, "GetSystemMetricsForDpi");
 
     _glfw.win32.dinput8.instance = LoadLibraryA("dinput8.dll");
     if (_glfw.win32.dinput8.instance)
@@ -179,9 +180,6 @@ static void freeLibraries(void)
 
     if (_glfw.win32.dinput8.instance)
         FreeLibrary(_glfw.win32.dinput8.instance);
-
-    if (_glfw.win32.winmm.instance)
-        FreeLibrary(_glfw.win32.winmm.instance);
 
     if (_glfw.win32.user32.instance)
         FreeLibrary(_glfw.win32.user32.instance);
@@ -266,7 +264,6 @@ static void createKeyTables(void)
     _glfw.win32.keycodes[0x151] = GLFW_KEY_PAGE_DOWN;
     _glfw.win32.keycodes[0x149] = GLFW_KEY_PAGE_UP;
     _glfw.win32.keycodes[0x045] = GLFW_KEY_PAUSE;
-    _glfw.win32.keycodes[0x146] = GLFW_KEY_PAUSE;
     _glfw.win32.keycodes[0x039] = GLFW_KEY_SPACE;
     _glfw.win32.keycodes[0x00F] = GLFW_KEY_TAB;
     _glfw.win32.keycodes[0x03A] = GLFW_KEY_CAPS_LOCK;
@@ -348,7 +345,7 @@ static GLFWbool createHelperWindow(void)
                         WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
                         0, 0, 1, 1,
                         NULL, NULL,
-                        GetModuleHandleW(NULL),
+                        _glfw.win32.instance,
                         NULL);
 
     if (!_glfw.win32.helperWindowHandle)
@@ -498,7 +495,7 @@ void _glfwUpdateKeyNamesWin32(void)
             vk = vks[key - GLFW_KEY_KP_0];
         }
         else
-            vk = MapVirtualKey(scancode, MAPVK_VSC_TO_VK);
+            vk = MapVirtualKeyW(scancode, MAPVK_VSC_TO_VK);
 
         length = ToUnicode(vk, scancode, state,
                            chars, sizeof(chars) / sizeof(WCHAR),
@@ -506,6 +503,8 @@ void _glfwUpdateKeyNamesWin32(void)
 
         if (length == -1)
         {
+            // This is a dead key, so we need a second simulated key press
+            // to make it output its own character (usually a diacritic)
             length = ToUnicode(vk, scancode, state,
                                chars, sizeof(chars) / sizeof(WCHAR),
                                0);
@@ -521,7 +520,8 @@ void _glfwUpdateKeyNamesWin32(void)
     }
 }
 
-// Replacement for IsWindowsVersionOrGreater as MinGW lacks versionhelpers.h
+// Replacement for IsWindowsVersionOrGreater, as we cannot rely on the
+// application having a correct embedded manifest
 //
 BOOL _glfwIsWindowsVersionOrGreaterWin32(WORD major, WORD minor, WORD sp)
 {
@@ -558,6 +558,14 @@ BOOL _glfwIsWindows10BuildOrGreaterWin32(WORD build)
 
 int _glfwPlatformInit(void)
 {
+    // To make SetForegroundWindow work as we want, we need to fiddle
+    // with the FOREGROUNDLOCKTIMEOUT system setting (we do this as early
+    // as possible in the hope of still being the foreground process)
+    SystemParametersInfoW(SPI_GETFOREGROUNDLOCKTIMEOUT, 0,
+                          &_glfw.win32.foregroundLockTimeout, 0);
+    SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, UIntToPtr(0),
+                          SPIF_SENDCHANGE);
+
     if (!loadLibraries())
         return GLFW_FALSE;
 
@@ -578,6 +586,7 @@ int _glfwPlatformInit(void)
         return GLFW_FALSE;
 
     _glfwInitTimerWin32();
+    _glfwInitJoysticksWin32();
 
     _glfwPollMonitorsWin32();
     return GLFW_TRUE;
@@ -593,11 +602,19 @@ void _glfwPlatformTerminate(void)
 
     _glfwUnregisterWindowClassWin32();
 
+    // Restore previous foreground lock timeout system setting
+    SystemParametersInfoW(SPI_SETFOREGROUNDLOCKTIMEOUT, 0,
+                          UIntToPtr(_glfw.win32.foregroundLockTimeout),
+                          SPIF_SENDCHANGE);
+
     free(_glfw.win32.clipboardString);
     free(_glfw.win32.rawInput);
 
     _glfwTerminateWGL();
     _glfwTerminateEGL();
+    _glfwTerminateOSMesa();
+
+    _glfwTerminateJoysticksWin32();
 
     freeLibraries();
 }
@@ -605,9 +622,7 @@ void _glfwPlatformTerminate(void)
 const char* _glfwPlatformGetVersionString(void)
 {
     return _GLFW_VERSION_NUMBER " Win32 WGL EGL OSMesa"
-#if defined(__MINGW64_VERSION_MAJOR)
-        " MinGW-w64"
-#elif defined(__MINGW32__)
+#if defined(__MINGW32__)
         " MinGW"
 #elif defined(_MSC_VER)
         " VisualC"

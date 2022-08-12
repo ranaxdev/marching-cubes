@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/title.dir/title.c.o CMakeFiles/title.dir/__/deps/glad_gl.c.o -o title  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

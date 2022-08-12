@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 macOS - www.glfw.org
+// GLFW 3.3 macOS - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -58,7 +58,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
     io_service_t service;
     CFDictionaryRef info;
 
-    if (IOServiceGetMatchingServices(kIOMasterPortDefault,
+    if (IOServiceGetMatchingServices(MACH_PORT_NULL,
                                      IOServiceMatching("IODisplayConnect"),
                                      &it) != 0)
     {
@@ -98,11 +98,7 @@ static char* getMonitorName(CGDirectDisplayID displayID, NSScreen* screen)
     IOObjectRelease(it);
 
     if (!service)
-    {
-        _glfwInputError(GLFW_PLATFORM_ERROR,
-                        "Cocoa: Failed to find service port for display");
         return _glfw_strdup("Display");
-    }
 
     CFDictionaryRef names =
         CFDictionaryGetValue(info, CFSTR(kDisplayProductName));
@@ -231,7 +227,7 @@ static double getFallbackRefreshRate(CGDirectDisplayID displayID)
     io_iterator_t it;
     io_service_t service;
 
-    if (IOServiceGetMatchingServices(kIOMasterPortDefault,
+    if (IOServiceGetMatchingServices(MACH_PORT_NULL,
                                      IOServiceMatching("IOFramebuffer"),
                                      &it) != 0)
     {

@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/clipboard.dir/clipboard.c.o CMakeFiles/clipboard.dir/__/deps/getopt.c.o CMakeFiles/clipboard.dir/__/deps/glad_gl.c.o -o clipboard  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

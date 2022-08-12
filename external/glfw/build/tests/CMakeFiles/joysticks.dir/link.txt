@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/joysticks.dir/joysticks.c.o CMakeFiles/joysticks.dir/__/deps/glad_gl.c.o -o joysticks  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 

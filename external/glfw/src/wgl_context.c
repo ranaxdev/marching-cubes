@@ -1,5 +1,5 @@
 //========================================================================
-// GLFW 3.4 WGL - www.glfw.org
+// GLFW 3.3 WGL - www.glfw.org
 //------------------------------------------------------------------------
 // Copyright (c) 2002-2006 Marcus Geelnard
 // Copyright (c) 2006-2019 Camilla Löwy <elmindreda@glfw.org>
@@ -787,7 +787,7 @@ GLFWAPI HGLRC glfwGetWGLContext(GLFWwindow* handle)
     _GLFWwindow* window = (_GLFWwindow*) handle;
     _GLFW_REQUIRE_INIT_OR_RETURN(NULL);
 
-    if (window->context.client == GLFW_NO_API)
+    if (window->context.source != GLFW_NATIVE_CONTEXT_API)
     {
         _glfwInputError(GLFW_NO_WINDOW_CONTEXT, NULL);
         return NULL;

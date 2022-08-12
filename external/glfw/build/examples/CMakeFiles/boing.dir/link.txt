@@ -1,0 +1,1 @@
+/bin/cc CMakeFiles/boing.dir/boing.c.o CMakeFiles/boing.dir/__/deps/glad_gl.c.o -o boing  -Wl,-rpath,/home/rana/Desktop/mc/external/glfw/build/src ../src/libglfw.so.3.3 -lm 
