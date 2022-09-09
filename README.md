@@ -33,8 +33,8 @@ Orient - Mouse
 Exit - ESC
 
 # Installation
-```
 ## Linux
+```
 git clone https://github.com/ranaxdev/marching-cubes
 cd marching-cubes
 mkdir build
