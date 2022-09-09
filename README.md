@@ -34,12 +34,27 @@ Exit - ESC
 
 # Installation
 ```
+## Linux
 git clone https://github.com/ranaxdev/marching-cubes
 cd marching-cubes
 mkdir build
 cd build
 cmake ../
 make
+./Marching-Cubes [header file path] [raw data file path]
+```
+
+## Windows
+Recommend using windows powershell
+```
+git clone https://github.com/ranaxdev/marching-cubes
+cd marching-cubes
+mkdir build
+cd build
+cmake ../
+Open MarchingCubes.sln with visual studio
+Right click MarchingCubes project and build
+cp .\Debug\* ./
 ./Marching-Cubes [header file path] [raw data file path]
 ```
 
